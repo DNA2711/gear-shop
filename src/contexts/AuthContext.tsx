@@ -1,219 +1,254 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { API_CONFIG, apiRequest } from "@/config/api";
-import { handleApiError } from "@/utils/errorHandling";
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  full_name?: string;
-  fullName?: string;
-  username?: string;
-}
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import {
+  User,
+  LoginForm,
+  SignupForm,
+  LoginResponse,
+  ApiResponse,
+} from "@/types/auth";
 
 interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; message: string }>;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-    confirmPassword: string
-  ) => Promise<{ success: boolean; message: string }>;
-  logout: () => Promise<void>;
+  loading: boolean;
+  loginLoading: boolean;
+  error: string | null;
+  login: (credentials: LoginForm) => Promise<boolean>;
+  register: (userData: SignupForm) => Promise<boolean>;
+  logout: () => void;
+  refreshToken: () => Promise<boolean>;
+  clearError: () => void;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check if user is authenticated
   const isAuthenticated = !!user;
 
-  // Kiểm tra auth status khi app load
+  // Load user from localStorage on mount
   useEffect(() => {
-    checkAuthStatus();
+    loadUserFromStorage();
   }, []);
 
-  const checkAuthStatus = async () => {
+  // Load user data from localStorage
+  const loadUserFromStorage = async () => {
     try {
-      const token = localStorage.getItem("auth-token");
-      console.log("Checking auth status, token exists:", !!token); // Debug log
+      setLoading(true);
+      const token = localStorage.getItem("accessToken");
 
       if (!token) {
-        console.log("No token found, user not authenticated"); // Debug log
-        setIsLoading(false);
+        setLoading(false);
         return;
       }
 
-      console.log("Fetching user profile..."); // Debug log
-      const response = await apiRequest(API_CONFIG.ENDPOINTS.AUTH.PROFILE, {
-        method: "GET",
+      // Verify token and get user profile
+      const response = await fetch("/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      console.log("Profile response status:", response.status); // Debug log
-
       if (response.ok) {
-        const data = await response.json();
-        console.log("Profile data received:", data); // Debug log
-        setUser(data);
+        const userData = await response.json();
+        setUser(userData);
       } else {
-        // Token không hợp lệ, xóa token
-        console.log("Invalid token, removing from localStorage"); // Debug log
-        localStorage.removeItem("auth-token");
+        // Token is invalid, clear storage
+        clearAuthStorage();
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
-      localStorage.removeItem("auth-token");
+      console.error("Error loading user:", error);
+      clearAuthStorage();
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const login = async (email: string, password: string) => {
+  // Clear authentication storage
+  const clearAuthStorage = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    // Clear cookie
+    document.cookie = `accessToken=; path=/; max-age=0`;
+    setUser(null);
+  };
+
+  // Login function
+  const login = async (credentials: LoginForm): Promise<boolean> => {
     try {
-      setIsLoading(true);
+      setLoginLoading(true);
+      setError(null);
 
-      console.log("Login attempt with:", { email }); // Debug log
-
-      const response = await apiRequest(API_CONFIG.ENDPOINTS.AUTH.LOGIN, {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
       });
 
-      console.log("Login response status:", response.status); // Debug log
-
       if (response.ok) {
-        const data = await response.json();
-        console.log("Login response data:", data); // Debug log
+        const loginData: LoginResponse = await response.json();
 
-        // Backend có thể trả về token với key khác nhau
-        const token = data.token || data.accessToken || data.access_token;
-        if (token) {
-          localStorage.setItem("auth-token", token);
-          console.log("Token saved to localStorage"); // Debug log
+        // Store tokens
+        localStorage.setItem("accessToken", loginData.accessToken);
+        localStorage.setItem("refreshToken", loginData.refreshToken);
+
+        // Also set token in cookie for middleware access
+        document.cookie = `accessToken=${loginData.accessToken}; path=/; max-age=3600; SameSite=strict`;
+
+        // Load complete user profile ngay lập tức
+        const userResponse = await fetch("/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${loginData.accessToken}`,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
         } else {
-          console.warn("No token found in response:", data); // Debug log
-        }
-
-        // Backend có thể trả về user info với structure khác nhau
-        let userInfo = data.user || data.data || data;
-
-        console.log("Raw backend response:", data); // Debug log
-        console.log("Extracted userInfo:", userInfo); // Debug log
-
-        // Normalize user data structure
-        if (userInfo) {
-          const normalizedUser = {
-            id: userInfo.id,
-            email: userInfo.email,
-            name:
-              userInfo.full_name ||
-              userInfo.fullName ||
-              userInfo.name ||
-              userInfo.username,
-            fullName: userInfo.full_name || userInfo.fullName,
-            role: userInfo.role || "user",
-            ...userInfo,
+          // Fallback user data nếu không load được profile
+          const userData: User = {
+            id: 0,
+            name: loginData.fullName || "",
+            username: credentials.username,
+            email: credentials.username,
+            role: loginData.role || "USER",
+            enabled: true,
+            createdAt: new Date().toISOString(),
           };
-
-          console.log("Normalized user:", normalizedUser); // Debug log
-          setUser(normalizedUser);
-        } else {
-          setUser(userInfo);
+          setUser(userData);
         }
 
-        return { success: true, message: "Đăng nhập thành công" };
+        return true;
       } else {
-        const errorMessage = await handleApiError(response);
-        console.log("Login error:", errorMessage); // Debug log
-        return { success: false, message: errorMessage };
+        const errorData = await response.json();
+        setError(errorData.message || "Đăng nhập thất bại");
+        return false;
       }
     } catch (error) {
-      console.error("Login failed:", error);
-      return {
-        success: false,
-        message:
-          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.",
-      };
+      setError("Lỗi kết nối. Vui lòng thử lại.");
+      console.error("Login error:", error);
+      return false;
     } finally {
-      setIsLoading(false);
+      setLoginLoading(false);
     }
   };
 
-  const register = async (
-    name: string,
-    email: string,
-    password: string,
-    confirmPassword: string
-  ) => {
+  // Register function
+  const register = async (userData: SignupForm): Promise<boolean> => {
     try {
-      setIsLoading(true);
-      const response = await apiRequest(API_CONFIG.ENDPOINTS.AUTH.SIGNUP, {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name, email, password, confirmPassword }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
       });
 
       if (response.ok) {
-        return { success: true, message: "Đăng ký thành công" };
+        // Registration successful
+        setError(null);
+        return true;
       } else {
-        const errorMessage = await handleApiError(response);
-        return { success: false, message: errorMessage };
+        const errorData = await response.json();
+        setError(errorData.message || "Đăng ký thất bại");
+        return false;
       }
     } catch (error) {
-      console.error("Register failed:", error);
-      return {
-        success: false,
-        message:
-          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.",
-      };
+      setError("Lỗi kết nối. Vui lòng thử lại.");
+      console.error("Register error:", error);
+      return false;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const logout = async () => {
+  // Logout function
+  const logout = () => {
+    clearAuthStorage();
+    setError(null);
+  };
+
+  // Refresh token function
+  const refreshToken = async (): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("auth-token");
-      if (token) {
-        // Gọi API logout nếu cần (tùy backend có endpoint logout không)
-        // await apiRequest("/auth/logout", {
-        //   method: "POST",
-        // });
+      const token = localStorage.getItem("refreshToken");
+
+      if (!token) {
+        logout();
+        return false;
       }
 
-      // Xóa token và user info
-      localStorage.removeItem("auth-token");
-      setUser(null);
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const tokenData: LoginResponse = await response.json();
+
+        // Update tokens
+        localStorage.setItem("accessToken", tokenData.accessToken);
+        localStorage.setItem("refreshToken", tokenData.refreshToken);
+
+        return true;
+      } else {
+        logout();
+        return false;
+      }
     } catch (error) {
-      console.error("Logout failed:", error);
-      // Vẫn logout ở frontend
-      localStorage.removeItem("auth-token");
-      setUser(null);
+      console.error("Token refresh error:", error);
+      logout();
+      return false;
     }
+  };
+
+  // Clear error function
+  const clearError = () => {
+    setError(null);
   };
 
   const value: AuthContextType = {
     user,
-    isLoading,
+    loading,
+    loginLoading,
+    error,
     login,
     register,
     logout,
+    refreshToken,
+    clearError,
     isAuthenticated,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// Custom hook to use auth context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -221,3 +256,38 @@ export function useAuth() {
   }
   return context;
 }
+
+// Higher-order component for protected routes
+export function withAuth<P extends object>(
+  Component: React.ComponentType<P>
+): React.ComponentType<P> {
+  return function AuthenticatedComponent(props: P) {
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Đang tải...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!isAuthenticated) {
+      // This will be handled by middleware, but just in case
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-gray-600">Vui lòng đăng nhập để tiếp tục</p>
+          </div>
+        </div>
+      );
+    }
+
+    return <Component {...props} />;
+  };
+}
+
+export default AuthContext;

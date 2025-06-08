@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 
 export default function LoginPage() {
@@ -14,9 +14,20 @@ export default function LoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { login, isLoading, user } = useAuth();
+  const {
+    login,
+    loading,
+    loginLoading,
+    user,
+    error: authError,
+    clearError,
+  } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showWelcomeToast } = useToast();
+
+  // Get redirect parameter từ URL
+  const redirectPath = searchParams.get("redirect");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,22 +39,69 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    clearError();
 
-    const result = await login(formData.email, formData.password);
+    const success = await login({
+      username: formData.email,
+      password: formData.password,
+    });
 
-    if (result.success) {
-      // Wait a bit for user state to update, then show welcome toast
-      setTimeout(() => {
-        const currentUser = user || { email: formData.email };
-        showWelcomeToast(currentUser);
-      }, 100);
+    if (success) {
+      // Lấy token để fetch user info ngay lập tức
+      const token = localStorage.getItem("accessToken");
 
-      // Small delay before redirect to show toast
-      setTimeout(() => {
-        router.push("/");
-      }, 800);
+      if (token) {
+        try {
+          const userResponse = await fetch("/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+
+            showWelcomeToast(userData);
+
+            // Redirect dựa trên role hoặc redirect parameter
+            let targetPath = "/";
+
+            if (userData.role?.toLowerCase() === "admin") {
+              targetPath = "/admin";
+            }
+
+            // Nếu có redirect parameter và user có quyền truy cập
+            if (redirectPath) {
+              if (
+                redirectPath === "/admin" &&
+                userData.role?.toLowerCase() === "admin"
+              ) {
+                targetPath = "/admin";
+              } else if (redirectPath !== "/admin") {
+                targetPath = redirectPath;
+              }
+            }
+
+            // Redirect nhanh và clean
+            router.replace(targetPath);
+          } else {
+            // Fallback nếu không lấy được user info
+            showWelcomeToast({ email: formData.email });
+            router.replace("/");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          showWelcomeToast({ email: formData.email });
+          router.replace("/");
+        }
+      } else {
+        showWelcomeToast({ email: formData.email });
+        router.replace("/");
+      }
     } else {
-      setError(result.message);
+      setError(
+        authError || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+      );
     }
   };
 
@@ -205,10 +263,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={loginLoading}
                   className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
                 >
-                  {isLoading ? (
+                  {loginLoading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       Đang đăng nhập...

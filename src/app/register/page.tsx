@@ -27,7 +27,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [message, setMessage] = useState("");
-  const { register, isLoading } = useAuth();
+  const { register, loading } = useAuth();
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,21 +89,24 @@ export default function RegisterPage() {
     setMessage("");
     setErrors({});
 
-    const result = await register(
-      formData.fullName,
-      formData.email,
-      formData.password,
-      formData.confirmPassword
-    );
+    const success = await register({
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      phoneNumber: formData.phone,
+    });
 
-    if (result.success) {
-      setMessage(result.message);
+    if (success) {
+      setMessage(
+        "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập..."
+      );
       // Redirect to login page after successful registration
       setTimeout(() => {
         router.push("/login");
       }, 2000);
     } else {
-      setMessage(result.message);
+      setMessage("Đăng ký thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -403,10 +406,10 @@ export default function RegisterPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={loading}
                   className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
                 >
-                  {isLoading ? (
+                  {loading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       Đang tạo tài khoản...

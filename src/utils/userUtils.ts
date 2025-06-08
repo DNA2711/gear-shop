@@ -12,29 +12,24 @@ interface User {
  */
 export const getUserDisplayName = (user?: User | null): string => {
   if (!user) {
-    console.log("getUserDisplayName: user is null/undefined");
     return "User";
   }
 
-  console.log("getUserDisplayName input:", user);
-
   // Try different name fields in priority order
-  const displayName = user.full_name;
+  const nameFields = [user.fullName, user.full_name, user.name, user.username];
 
-  console.log("getUserDisplayName extracted:", displayName);
-
-  if (displayName && displayName.trim().length > 0) {
-    return displayName.trim();
+  for (const field of nameFields) {
+    if (field && typeof field === "string" && field.trim().length > 0) {
+      return field.trim();
+    }
   }
 
-  // Fallback to email prefix
+  // Fallback to email prefix only if no name fields are available
   if (user.email) {
     const emailPrefix = user.email.split("@")[0];
-    console.log("getUserDisplayName fallback to email prefix:", emailPrefix);
     return emailPrefix;
   }
 
-  console.log("getUserDisplayName fallback to User");
   return "User";
 };
 
@@ -53,8 +48,11 @@ export const getShortDisplayName = (user?: User | null): string => {
 
 /**
  * Get greeting name (for welcome messages)
+ * Returns full name for greeting instead of just first name
  */
 export const getGreetingName = (user?: User | null): string => {
-  const shortName = getShortDisplayName(user);
-  return shortName === "User" ? "bạn" : shortName;
+  console.log("getGreetingName called with user:", user);
+  const fullName = getUserDisplayName(user);
+  console.log("getGreetingName result:", fullName);
+  return fullName === "User" ? "bạn" : fullName;
 };

@@ -16,19 +16,19 @@ export function ProtectedRoute({
   requireAuth = true,
   redirectTo = "/login",
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!loading) {
       if (requireAuth && !isAuthenticated) {
         router.push(redirectTo);
       }
     }
-  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
+  }, [isAuthenticated, loading, requireAuth, redirectTo, router]);
 
   // Show loading while checking auth status
-  if (isLoading) {
+  if (loading) {
     return <Loading message="Đang kiểm tra đăng nhập..." fullScreen />;
   }
 

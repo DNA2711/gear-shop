@@ -94,10 +94,17 @@
 //     </div>
 //   );
 // };
-export default function SingleProduct({params:{productId}}: {params:{productId:string}}) {
+export default async function SingleProduct({
+  params,
+}: {
+  params: Promise<{ productId: string }>;
+}) {
+  const { productId } = await params;
+
   return (
     <div className={"container my-6"}>
       <h1>Product ID: {productId}</h1>
+      <p>This is a placeholder page for product details.</p>
     </div>
   );
 }

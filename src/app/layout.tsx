@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { AuthStatus } from "@/components/AuthStatus";
 import { ToastProvider } from "@/contexts/ToastContext";
+import "@/utils/cleanLocalStorage";
 
 const fontSans: NextFont = Quicksand({
   subsets: ["latin"],

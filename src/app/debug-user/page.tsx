@@ -40,11 +40,8 @@ export default function DebugUserPage() {
                 <strong>user?.name:</strong> {user?.name || "undefined"}
               </p>
               <p>
-                <strong>user?.full_name:</strong>{" "}
-                {user?.full_name || "undefined"}
-              </p>
-              <p>
-                <strong>user?.fullName:</strong> {user?.fullName || "undefined"}
+                <strong>user?.name (full name):</strong>{" "}
+                {user?.name || "undefined"}
               </p>
               <p>
                 <strong>user?.username:</strong> {user?.username || "undefined"}
@@ -59,8 +56,8 @@ export default function DebugUserPage() {
                 {getUserDisplayName(user)}
               </p>
               <p>
-                <strong>Direct full_name access:</strong>{" "}
-                {user?.full_name || "N/A"}
+                <strong>Authentication Status:</strong>{" "}
+                {isAuthenticated ? "Authenticated" : "Not Authenticated"}
               </p>
             </div>
           </div>

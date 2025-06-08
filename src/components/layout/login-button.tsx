@@ -26,7 +26,7 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import { getUserDisplayName } from "@/utils/userUtils";
 
 export default function LoginButton() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isAuthenticated, logout, loading, loginLoading } = useAuth();
   const router = useRouter();
 
   // Debug log
@@ -40,6 +40,22 @@ export default function LoginButton() {
     await logout();
     router.push("/");
   };
+
+  // Hiển thị loading state khi đang login
+  if (loginLoading) {
+    return (
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          disabled
+          className="bg-transparent border-blue-400 text-blue-400 opacity-50"
+        >
+          <div className="w-4 h-4 mr-2 animate-spin border-2 border-blue-400 border-t-transparent rounded-full"></div>
+          Đang đăng nhập...
+        </Button>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -75,7 +91,7 @@ export default function LoginButton() {
         >
           <UserAvatar user={user || undefined} size="sm" showStatus />
           <span className="hidden sm:inline">
-            {user?.full_name || getUserDisplayName(user)}
+            {user?.name || getUserDisplayName(user)}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -86,7 +102,7 @@ export default function LoginButton() {
             <UserAvatar user={user || undefined} size="md" showStatus />
             <div>
               <p className="font-semibold text-white">
-                {user?.full_name || getUserDisplayName(user)}
+                {user?.name || getUserDisplayName(user)}
               </p>
               <p className="text-sm text-gray-400">{user?.email}</p>
             </div>
@@ -127,11 +143,11 @@ export default function LoginButton() {
 
         <DropdownMenuItem
           onClick={handleLogout}
-          disabled={isLoading}
+          disabled={loading}
           className="hover:bg-red-900 cursor-pointer text-red-400 hover:text-red-300 py-2"
         >
           <LogOut className="w-4 h-4 mr-3" />
-          {isLoading ? "Đang đăng xuất..." : "Đăng xuất"}
+          {loading ? "Đang đăng xuất..." : "Đăng xuất"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

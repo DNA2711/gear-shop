@@ -1,12 +1,28 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { safeLocalStorage } from "@/config/api";
+import { useEffect, useState } from "react";
 
 export function AuthStatus() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
+  const [isClient, setIsClient] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  // Đảm bảo component đã mount trên client
+  useEffect(() => {
+    setIsClient(true);
+    // Chỉ lấy token khi đã ở client
+    setToken(safeLocalStorage.getItem("auth-token"));
+  }, []);
 
   if (process.env.NODE_ENV !== "development") {
     return null; // Chỉ hiển thị trong development mode
+  }
+
+  // Không render gì cho đến khi component đã mount ở client
+  if (!isClient) {
+    return null;
   }
 
   return (
@@ -14,16 +30,13 @@ export function AuthStatus() {
       <h4 className="font-bold mb-2">Auth Status (Dev)</h4>
       <div className="space-y-1">
         <p>
-          <strong>Loading:</strong> {isLoading ? "Yes" : "No"}
+          <strong>Loading:</strong> {loading ? "Yes" : "No"}
         </p>
         <p>
           <strong>Authenticated:</strong> {isAuthenticated ? "Yes" : "No"}
         </p>
         <p>
-          <strong>Token:</strong>{" "}
-          {typeof window !== "undefined" && localStorage.getItem("auth-token")
-            ? "Exists"
-            : "None"}
+          <strong>Token:</strong> {token ? "Exists" : "None"}
         </p>
         {user && (
           <div>

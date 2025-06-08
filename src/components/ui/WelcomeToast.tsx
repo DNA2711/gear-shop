@@ -26,7 +26,7 @@ export function WelcomeToast({ user, onClose }: WelcomeToastProps) {
 
   const handleClose = () => {
     setIsVisible(false);
-    setTimeout(onClose, 300);
+    setTimeout(onClose, 200);
   };
 
   if (!isVisible) {
