@@ -9,11 +9,11 @@ export default function AdminLayout({
 }) {
   return (
     <AdminProtectedRoute>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 p-6">
             {children}
           </main>
         </div>

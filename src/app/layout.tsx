@@ -5,7 +5,7 @@ import { NextFont } from "next/dist/compiled/@next/font";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { AuthStatus } from "@/components/AuthStatus";
+// import { AuthStatus } from "@/components/AuthStatus";
 import { ToastProvider } from "@/contexts/ToastContext";
 import "@/utils/cleanLocalStorage";
 
@@ -35,7 +35,7 @@ export default function RootLayout({
           <AuthProvider>
             <ToastProvider>
               <ConditionalLayout>{children}</ConditionalLayout>
-              <AuthStatus />
+              {/* <AuthStatus /> */}
             </ToastProvider>
           </AuthProvider>
         </ErrorBoundary>

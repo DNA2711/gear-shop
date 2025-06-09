@@ -13,9 +13,10 @@ const dbConfig = {
 // GET - Lấy brand theo ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const connection = await mysql.createConnection(dbConfig);
 
     const [rows] = await connection.execute(
@@ -29,7 +30,7 @@ export async function GET(
       FROM brands 
       WHERE brand_id = ?
     `,
-      [params.id]
+      [id]
     );
 
     await connection.end();
@@ -55,9 +56,10 @@ export async function GET(
 // PUT - Cập nhật brand
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { brand_name, brand_code, logo_code, website } = body;
 
@@ -73,7 +75,7 @@ export async function PUT(
     // Kiểm tra brand có tồn tại không
     const [existingBrand] = await connection.execute(
       "SELECT brand_id FROM brands WHERE brand_id = ?",
-      [params.id]
+      [id]
     );
 
     if (!Array.isArray(existingBrand) || existingBrand.length === 0) {
@@ -87,7 +89,7 @@ export async function PUT(
     // Kiểm tra tên brand hoặc code đã tồn tại chưa (trừ brand hiện tại)
     const [duplicateBrands] = await connection.execute(
       "SELECT brand_id FROM brands WHERE (brand_name = ? OR brand_code = ?) AND brand_id != ?",
-      [brand_name, brand_code, params.id]
+      [brand_name, brand_code, id]
     );
 
     if (Array.isArray(duplicateBrands) && duplicateBrands.length > 0) {
@@ -105,7 +107,7 @@ export async function PUT(
       SET brand_name = ?, brand_code = ?, logo_code = ?, website = ?
       WHERE brand_id = ?
     `,
-      [brand_name, brand_code, logo_code || null, website || null, params.id]
+      [brand_name, brand_code, logo_code || null, website || null, id]
     );
 
     // Lấy brand đã cập nhật để trả về
@@ -120,7 +122,7 @@ export async function PUT(
       FROM brands 
       WHERE brand_id = ?
     `,
-      [params.id]
+      [id]
     );
 
     await connection.end();
@@ -138,15 +140,16 @@ export async function PUT(
 // DELETE - Xóa brand
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const connection = await mysql.createConnection(dbConfig);
 
     // Kiểm tra brand có tồn tại không
     const [existingBrand] = await connection.execute(
       "SELECT brand_id FROM brands WHERE brand_id = ?",
-      [params.id]
+      [id]
     );
 
     if (!Array.isArray(existingBrand) || existingBrand.length === 0) {
@@ -160,7 +163,7 @@ export async function DELETE(
     // Kiểm tra xem brand có đang được sử dụng trong products không
     const [productsUsingBrand] = await connection.execute(
       "SELECT product_id FROM products WHERE brand_id = ? LIMIT 1",
-      [params.id]
+      [id]
     );
 
     if (Array.isArray(productsUsingBrand) && productsUsingBrand.length > 0) {
@@ -172,9 +175,7 @@ export async function DELETE(
     }
 
     // Xóa brand
-    await connection.execute("DELETE FROM brands WHERE brand_id = ?", [
-      params.id,
-    ]);
+    await connection.execute("DELETE FROM brands WHERE brand_id = ?", [id]);
 
     await connection.end();
 

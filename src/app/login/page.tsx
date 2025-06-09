@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 
-export default function LoginPage() {
+function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,63 +41,40 @@ export default function LoginPage() {
     setError("");
     clearError();
 
-    const success = await login({
+    const result = await login({
       username: formData.email,
       password: formData.password,
     });
 
-    if (success) {
-      // Lấy token để fetch user info ngay lập tức
-      const token = localStorage.getItem("accessToken");
+    if (result.success && result.user) {
+      const currentUser = result.user;
 
-      if (token) {
-        try {
-          const userResponse = await fetch("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-
-            showWelcomeToast(userData);
-
-            // Redirect dựa trên role hoặc redirect parameter
-            let targetPath = "/";
-
-            if (userData.role?.toLowerCase() === "admin") {
-              targetPath = "/admin";
-            }
-
-            // Nếu có redirect parameter và user có quyền truy cập
-            if (redirectPath) {
-              if (
-                redirectPath === "/admin" &&
-                userData.role?.toLowerCase() === "admin"
-              ) {
-                targetPath = "/admin";
-              } else if (redirectPath !== "/admin") {
-                targetPath = redirectPath;
-              }
-            }
-
-            // Redirect nhanh và clean
-            router.replace(targetPath);
-          } else {
-            // Fallback nếu không lấy được user info
-            showWelcomeToast({ email: formData.email });
-            router.replace("/");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          showWelcomeToast({ email: formData.email });
-          router.replace("/");
-        }
-      } else {
-        showWelcomeToast({ email: formData.email });
-        router.replace("/");
+      // Chỉ hiển thị toast chào mừng cho user thường, không phải admin
+      if (currentUser.role?.toLowerCase() !== "admin") {
+        showWelcomeToast(currentUser);
       }
+
+      // Redirect dựa trên role hoặc redirect parameter
+      let targetPath = "/";
+
+      if (currentUser.role?.toLowerCase() === "admin") {
+        targetPath = "/admin";
+      }
+
+      // Nếu có redirect parameter và user có quyền truy cập
+      if (redirectPath) {
+        if (
+          redirectPath === "/admin" &&
+          currentUser.role?.toLowerCase() === "admin"
+        ) {
+          targetPath = "/admin";
+        } else if (redirectPath !== "/admin") {
+          targetPath = redirectPath;
+        }
+      }
+
+      // Redirect ngay lập tức
+      router.replace(targetPath);
     } else {
       setError(
         authError || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
@@ -349,5 +326,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -11,6 +11,7 @@ import {
   Tag,
   List,
   Settings,
+  Atom,
 } from "lucide-react";
 
 const navigation = [
@@ -28,9 +29,20 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-64 bg-white shadow-lg">
-      <div className="flex items-center justify-center h-16 bg-blue-600">
-        <h1 className="text-white text-xl font-bold">Gear Shop Admin</h1>
+    <div className="w-64 bg-gradient-to-b from-gray-900 via-blue-900 to-gray-900 shadow-xl">
+      <div className="flex items-center justify-center h-16 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 border-b border-blue-500/30">
+        <Link
+          href="/"
+          className="text-xl font-bold select-none flex items-center group transition-all duration-300 hover:scale-105"
+        >
+          <div className="flex items-center gap-2">
+            <Atom className="w-6 h-6 text-blue-400 animate-spin-slow group-hover:animate-spin" />
+            <span className="text-white font-light tracking-wider">Gear</span>
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 text-black px-2 py-1 rounded-lg font-medium tracking-wide transform group-hover:scale-110 transition-transform text-sm">
+              Hub
+            </span>
+          </div>
+        </Link>
       </div>
       <nav className="mt-8">
         {navigation.map((item) => {
@@ -42,13 +54,15 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center px-6 py-3 text-left text-base font-medium transition-colors duration-200 ${
+              className={`flex items-center px-6 py-3 text-left text-base font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                  ? "bg-gradient-to-r from-blue-500/30 to-cyan-500/30 text-white border-r-4 border-blue-400 shadow-lg backdrop-blur-sm"
+                  : "text-gray-300 hover:bg-white/10 hover:text-white hover:border-r-2 hover:border-blue-400/50"
               }`}
             >
-              <item.icon className="mr-3 h-5 w-5" />
+              <item.icon
+                className={`mr-3 h-5 w-5 ${isActive ? "text-blue-400" : ""}`}
+              />
               {item.name}
             </Link>
           );

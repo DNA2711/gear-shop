@@ -20,7 +20,7 @@ interface AuthContextType {
   loading: boolean;
   loginLoading: boolean;
   error: string | null;
-  login: (credentials: LoginForm) => Promise<boolean>;
+  login: (credentials: LoginForm) => Promise<{ success: boolean; user?: User }>;
   register: (userData: SignupForm) => Promise<boolean>;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
@@ -91,7 +91,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   // Login function
-  const login = async (credentials: LoginForm): Promise<boolean> => {
+  const login = async (
+    credentials: LoginForm
+  ): Promise<{ success: boolean; user?: User }> => {
     try {
       setLoginLoading(true);
       setError(null);
@@ -121,12 +123,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           },
         });
 
+        let userData: User;
         if (userResponse.ok) {
-          const userData = await userResponse.json();
+          userData = await userResponse.json();
           setUser(userData);
         } else {
           // Fallback user data nếu không load được profile
-          const userData: User = {
+          userData = {
             id: 0,
             name: loginData.fullName || "",
             username: credentials.username,
@@ -138,16 +141,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(userData);
         }
 
-        return true;
+        return { success: true, user: userData };
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Đăng nhập thất bại");
-        return false;
+        return { success: false };
       }
     } catch (error) {
       setError("Lỗi kết nối. Vui lòng thử lại.");
       console.error("Login error:", error);
-      return false;
+      return { success: false };
     } finally {
       setLoginLoading(false);
     }

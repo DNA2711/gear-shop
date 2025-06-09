@@ -9,6 +9,7 @@ import {
   UserPlus,
   ShoppingBag,
   Heart,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -82,6 +83,8 @@ export default function LoginButton() {
     );
   }
 
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -110,6 +113,18 @@ export default function LoginButton() {
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator className="bg-gray-700" />
+
+        {isAdmin && (
+          <>
+            <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer py-2">
+              <LayoutDashboard className="w-4 h-4 mr-3 text-purple-400" />
+              <Link href="/admin" className="flex-1">
+                Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-gray-700" />
+          </>
+        )}
 
         <DropdownMenuItem className="hover:bg-gray-800 cursor-pointer py-2">
           <User className="w-4 h-4 mr-3 text-blue-400" />
