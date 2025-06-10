@@ -13,6 +13,9 @@ const dbConfig = {
   // MySQL2 pool options
   idleTimeout: 60000,
   acquireTimeout: 60000,
+  // Character set for Vietnamese support
+  charset: "utf8mb4",
+  timezone: "+00:00",
 };
 
 // Create connection pool
@@ -427,11 +430,13 @@ export const dbHelpers = {
         b.brand_code,
         c.category_name,
         c.category_code,
-        pc.category_name as category_parent_name
+        pc.category_name as category_parent_name,
+        pri.image_code as primary_image
       FROM products p
       LEFT JOIN brands b ON p.brand_id = b.brand_id
       LEFT JOIN categories c ON p.category_id = c.category_id
       LEFT JOIN categories pc ON c.parent_id = pc.category_id
+      LEFT JOIN product_images pri ON p.product_id = pri.product_id AND pri.is_primary = TRUE
       WHERE 1=1
     `;
 
@@ -546,7 +551,8 @@ export const dbHelpers = {
 
   // Find product by ID
   findProductById: async (productId: number) => {
-    return await db.queryFirst(
+    // First get the product details
+    const product = await db.queryFirst(
       `
       SELECT 
         p.*,
@@ -554,15 +560,37 @@ export const dbHelpers = {
         b.brand_code,
         c.category_name,
         c.category_code,
-        pc.category_name as category_parent_name
+        pc.category_name as category_parent_name,
+        pri.image_code as primary_image
       FROM products p
       LEFT JOIN brands b ON p.brand_id = b.brand_id
       LEFT JOIN categories c ON p.category_id = c.category_id
       LEFT JOIN categories pc ON c.parent_id = pc.category_id
+      LEFT JOIN product_images pri ON p.product_id = pri.product_id AND pri.is_primary = TRUE
       WHERE p.product_id = ?
     `,
       [productId]
     );
+
+    if (!product) return null;
+
+    // Get all images for this product
+    const images = await db.query(
+      "SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, display_order ASC",
+      [productId]
+    );
+
+    // Get all specifications for this product
+    const specifications = await db.query(
+      "SELECT spec_name, spec_value FROM product_specifications WHERE product_id = ? ORDER BY display_order ASC",
+      [productId]
+    );
+
+    return {
+      ...product,
+      images: images || [],
+      specifications: specifications || [],
+    };
   },
 
   // Find product by code
@@ -804,6 +832,66 @@ export const dbHelpers = {
     return await db.update("DELETE FROM product_images WHERE product_id = ?", [
       productId,
     ]);
+  },
+
+  // ========== PRODUCT SPECIFICATIONS FUNCTIONS ==========
+
+  // Add specification to product
+  addProductSpecification: async (specData: {
+    product_id: number;
+    spec_name: string;
+    spec_value: string;
+    display_order?: number;
+  }) => {
+    const { product_id, spec_name, spec_value, display_order = 0 } = specData;
+
+    return await db.insert(
+      `INSERT INTO product_specifications (product_id, spec_name, spec_value, display_order, created_at, updated_at) 
+       VALUES (?, ?, ?, ?, NOW(), NOW())`,
+      [product_id, spec_name, spec_value, display_order]
+    );
+  },
+
+  // Update product specification
+  updateProductSpecification: async (
+    specId: number,
+    specData: Partial<{
+      spec_name: string;
+      spec_value: string;
+      display_order: number;
+    }>
+  ) => {
+    const fields = Object.keys(specData).filter(
+      (key) => specData[key as keyof typeof specData] !== undefined
+    );
+    if (fields.length === 0) return 0;
+
+    const setClause = fields.map((field) => `${field} = ?`).join(", ");
+    const values: any[] = fields.map(
+      (field) => specData[field as keyof typeof specData]
+    );
+    values.push(specId);
+
+    return await db.update(
+      `UPDATE product_specifications SET ${setClause}, updated_at = NOW() WHERE spec_id = ?`,
+      values
+    );
+  },
+
+  // Delete product specification
+  deleteProductSpecification: async (specId: number) => {
+    return await db.update(
+      "DELETE FROM product_specifications WHERE spec_id = ?",
+      [specId]
+    );
+  },
+
+  // Delete all specifications for a product
+  deleteAllProductSpecifications: async (productId: number) => {
+    return await db.update(
+      "DELETE FROM product_specifications WHERE product_id = ?",
+      [productId]
+    );
   },
 };
 

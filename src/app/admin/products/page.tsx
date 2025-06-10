@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Edit,
@@ -18,6 +19,7 @@ import { CategoryWithChildren } from "@/types/category";
 import ProductModal from "@/components/admin/ProductModal";
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<ProductWithDetails[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<CategoryWithChildren[]>([]);
@@ -126,8 +128,7 @@ export default function ProductsPage() {
   };
 
   const handleEdit = (product: ProductWithDetails) => {
-    setEditingProduct(product);
-    setIsModalOpen(true);
+    router.push(`/admin/products/${product.product_id}/edit`);
   };
 
   const handleSave = async (productData: any) => {
@@ -597,9 +598,21 @@ export default function ProductsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button
+                          onClick={() =>
+                            window.open(
+                              `/products/${product.product_id}`,
+                              "_blank"
+                            )
+                          }
+                          className="text-gray-600 hover:text-gray-900"
+                          title="Xem chi tiết"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleEdit(product)}
                           className="text-blue-600 hover:text-blue-900"
-                          title="Sửa"
+                          title="Chỉnh sửa chi tiết"
                         >
                           <Edit className="h-4 w-4" />
                         </button>

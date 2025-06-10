@@ -1,110 +1,91 @@
-// import base from "@/utils/airtable";
-// import isValidArray from "@/utils/isValidArray";
-// import { notFound } from "next/navigation";
-// import Link from "next/link";
-// import Image from "next/image";
-// import { Fragment } from "react";
-// import { resolveRichText } from "@/utils/product_utils";
-// import { marked } from "marked";
-// // import ProductVariantSelection from "@/components/pages/products/product-variant-selection";
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { ProductWithDetails } from "@/types/product";
+import ProductDetail from "@/components/pages/products/ProductDetail";
+import ProductDetailSkeleton from "@/components/pages/products/ProductDetailSkeleton";
 
-// export default async function SingleProduct({
-//   params,
-// }: {
-//   params: { productId: string };
-// }) {
-//   const data = await base("products")
-//     .select({
-//       filterByFormula: `RECORD_ID() = '${params.productId}'`,
-//     })
-//     .all();
+async function fetchProduct(
+  productId: string
+): Promise<ProductWithDetails | null> {
+  try {
+    const response = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/products/${productId}`,
+      {
+        cache: "no-store", // Always fetch fresh data
+      }
+    );
 
-//   if (!isValidArray(data)) {
-//     return notFound();
-//   }
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error("Failed to fetch product");
+    }
 
-//   const product = data[0];
+    const result = await response.json();
+    return result.success ? result.data : null;
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return null;
+  }
+}
 
-//   return (
-//     <div className={"container my-6"}>
-//       <div className="flex gap-6">
-//         <div className={"flex-shrink-0"}>
-//           <div className="sticky top-24">
-//             <ProductImageThumbnails product={product} />
-//           </div>
-//         </div>
-//         <div className={"flex-grow flex gap-6"}>
-//           <div className={"w-1/2 flex-shrink-0"}>
-//             <ProductImages product={product} />
-//           </div>
-//           <div className={"flex-grow"}>
-//             <h1 className={"my-4 text-4xl"}>{String(product.fields.name)}</h1>
-//             <ProductVariantSelection product={JSON.stringify(product)} />
-
-//             <div className="my-8">
-//               <div
-//                 dangerouslySetInnerHTML={{
-//                   __html: marked.parse(
-//                     resolveRichText(product.fields.description)
-//                   ),
-//                 }}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// const ProductImageThumbnails = ({ product }: { product: any }) => {
-//   if (!isValidArray(product.fields?.images)) return <>No Image Found</>;
-//   return (
-//     <div className={"flex flex-col gap-2"}>
-//       {product.fields.images.map((image: any, index: number) => (
-//         <Link href={`#${image.id}`} key={image.id}>
-//           <Image
-//             src={image.url}
-//             alt={product.fields.name}
-//             width={150}
-//             height={150}
-//           />
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// };
-
-// const ProductImages = ({ product }: { product: any }) => {
-//   if (!isValidArray(product.fields?.images)) return <>No Image Found</>;
-//   return (
-//     <div className={"flex flex-col gap-2"}>
-//       {product.fields.images.map((image: any, index: number) => (
-//         <Fragment key={image.id}>
-//           <Image
-//             className={"w-full"}
-//             src={image.url}
-//             alt={product.fields.name}
-//             width={image.width}
-//             height={image.height}
-//             id={image.id}
-//           />
-//         </Fragment>
-//       ))}
-//     </div>
-//   );
-// };
-export default async function SingleProduct({
-  params,
-}: {
+interface ProductPageProps {
   params: Promise<{ productId: string }>;
-}) {
+}
+
+export default async function ProductPage({ params }: ProductPageProps) {
   const { productId } = await params;
 
+  // Validate productId
+  const id = parseInt(productId);
+  if (isNaN(id)) {
+    notFound();
+  }
+
+  const product = await fetchProduct(productId);
+
+  if (!product) {
+    notFound();
+  }
+
   return (
-    <div className={"container my-6"}>
-      <h1>Product ID: {productId}</h1>
-      <p>This is a placeholder page for product details.</p>
-    </div>
+    <Suspense fallback={<ProductDetailSkeleton />}>
+      <ProductDetail product={product} />
+    </Suspense>
   );
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: ProductPageProps) {
+  const { productId } = await params;
+  const product = await fetchProduct(productId);
+
+  if (!product) {
+    return {
+      title: "Sản phẩm không tìm thấy",
+    };
+  }
+
+  return {
+    title: `${product.product_name} - Gear Shop`,
+    description: `Mua ${product.product_name} với giá ${new Intl.NumberFormat(
+      "vi-VN",
+      {
+        style: "currency",
+        currency: "VND",
+      }
+    ).format(product.price)}. ${
+      product.brand_name ? `Thương hiệu ${product.brand_name}.` : ""
+    } ${product.category_name ? `Danh mục ${product.category_name}.` : ""}`,
+    openGraph: {
+      title: product.product_name,
+      description: `Mua ${product.product_name} tại Gear Shop`,
+      images: product.primary_image
+        ? [`data:image/jpeg;base64,${product.primary_image}`]
+        : [],
+    },
+  };
 }

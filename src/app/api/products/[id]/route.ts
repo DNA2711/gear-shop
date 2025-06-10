@@ -32,10 +32,17 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: product,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: product,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbHelpers as ProductService } from "@/lib/database";
 
-// GET /api/products/[id]/images - Get images for a product
+// GET /api/products/[id]/specifications - Get specifications for a product
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -16,21 +16,25 @@ export async function GET(
       );
     }
 
-    const images = await ProductService.findProductImages(productId);
+    const product = await ProductService.findProductById(productId);
+
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
 
     return NextResponse.json({
-      data: images || [],
+      data: product.specifications || [],
     });
   } catch (error) {
-    console.error("Error fetching product images:", error);
+    console.error("Error fetching product specifications:", error);
     return NextResponse.json(
-      { error: "Failed to fetch product images" },
+      { error: "Failed to fetch product specifications" },
       { status: 500 }
     );
   }
 }
 
-// POST /api/products/[id]/images - Add new image
+// POST /api/products/[id]/specifications - Add new specification
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -45,14 +49,12 @@ export async function POST(
       );
     }
 
-    const formData = await request.formData();
-    const imageFile = formData.get("image") as File;
-    const isPrimary = formData.get("is_primary") === "true";
-    const displayOrder = parseInt(formData.get("display_order") as string) || 0;
+    const body = await request.json();
+    const { spec_name, spec_value, display_order = 0 } = body;
 
-    if (!imageFile || !imageFile.type.startsWith("image/")) {
+    if (!spec_name || !spec_value) {
       return NextResponse.json(
-        { error: "Valid image file is required" },
+        { error: "spec_name and spec_value are required" },
         { status: 400 }
       );
     }
@@ -63,34 +65,28 @@ export async function POST(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Convert image to base64
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64 = `data:${imageFile.type};base64,${buffer.toString("base64")}`;
-
-    // Add image
-    const result = await ProductService.addProductImage({
+    // Add specification
+    const result = await ProductService.addProductSpecification({
       product_id: productId,
-      image_name: imageFile.name,
-      image_code: base64,
-      is_primary: isPrimary,
-      display_order: displayOrder,
+      spec_name,
+      spec_value,
+      display_order,
     });
 
     return NextResponse.json({
-      message: "Image added successfully",
-      image_id: result,
+      message: "Specification added successfully",
+      spec_id: result,
     });
   } catch (error) {
-    console.error("Error adding product image:", error);
+    console.error("Error adding product specification:", error);
     return NextResponse.json(
-      { error: "Failed to add product image" },
+      { error: "Failed to add product specification" },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/products/[id]/images - Delete all images for a product
+// DELETE /api/products/[id]/specifications - Delete all specifications for a product
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -111,17 +107,19 @@ export async function DELETE(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Delete all images
-    const result = await ProductService.deleteAllProductImages(productId);
+    // Delete all specifications
+    const result = await ProductService.deleteAllProductSpecifications(
+      productId
+    );
 
     return NextResponse.json({
-      message: "All images deleted successfully",
+      message: "All specifications deleted successfully",
       deleted_count: result,
     });
   } catch (error) {
-    console.error("Error deleting product images:", error);
+    console.error("Error deleting product specifications:", error);
     return NextResponse.json(
-      { error: "Failed to delete product images" },
+      { error: "Failed to delete product specifications" },
       { status: 500 }
     );
   }

@@ -9,6 +9,11 @@ export interface ProductImage {
   updated_at: string;
 }
 
+export interface ProductSpecification {
+  spec_name: string;
+  spec_value: string;
+}
+
 export interface Product {
   product_id: number;
   product_name: string;
@@ -16,6 +21,7 @@ export interface Product {
   brand_id?: number | null;
   category_id?: number | null;
   price: number;
+  original_price?: number | null;
   stock_quantity: number;
   is_active: boolean;
   created_at: string;
@@ -30,6 +36,7 @@ export interface ProductWithDetails extends Product {
   category_parent_name?: string;
   primary_image?: string; // Base64 của ảnh chính
   images?: ProductImage[]; // Tất cả ảnh của sản phẩm
+  specifications?: ProductSpecification[]; // Thông số kỹ thuật
 }
 
 export interface CreateProductRequest {
@@ -38,6 +45,7 @@ export interface CreateProductRequest {
   brand_id?: number;
   category_id?: number;
   price: number;
+  original_price?: number;
   stock_quantity?: number;
   is_active?: boolean;
 }
@@ -48,6 +56,7 @@ export interface UpdateProductRequest {
   brand_id?: number;
   category_id?: number;
   price?: number;
+  original_price?: number;
   stock_quantity?: number;
   is_active?: boolean;
 }
