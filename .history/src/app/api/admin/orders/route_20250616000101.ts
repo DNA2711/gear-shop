@@ -1,0 +1,199 @@
+import { NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import { jwtService } from "@/lib/jwt";
+
+export async function GET(req: Request) {
+  try {
+    // Get token from Authorization header
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Verify token and check if user is admin
+    const payload = await jwtService.verifyToken(token);
+    const user = await db.queryFirst(
+      "SELECT user_id, role FROM users WHERE email = ?",
+      [payload.username]
+    );
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.role !== "admin") {
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 403 }
+      );
+    }
+
+    // Get URL search params for pagination and filtering
+    const url = new URL(req.url);
+    const page = parseInt(url.searchParams.get("page") || "1");
+    const limit = parseInt(url.searchParams.get("limit") || "20");
+    const status = url.searchParams.get("status");
+    const search = url.searchParams.get("search");
+    const offset = (page - 1) * limit;
+
+    // Build WHERE clause
+    let whereClause = "";
+    let params: any[] = [];
+
+    if (status) {
+      whereClause += " WHERE o.status = ?";
+      params.push(status);
+    }
+
+    if (search) {
+      if (whereClause) {
+        whereClause +=
+          " AND (u.full_name LIKE ? OR u.email LIKE ? OR o.id LIKE ?)";
+      } else {
+        whereClause +=
+          " WHERE (u.full_name LIKE ? OR u.email LIKE ? OR o.id LIKE ?)";
+      }
+      const searchPattern = `%${search}%`;
+      params.push(searchPattern, searchPattern, searchPattern);
+    }
+
+    // Get orders with user info and items
+    const ordersQuery = `
+      SELECT 
+        o.id,
+        o.user_id,
+        o.total_amount,
+        o.status,
+        o.shipping_address,
+        o.phone_number,
+        o.created_at,
+        o.updated_at,
+        u.full_name as customer_name,
+        u.email as customer_email,
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', oi.id,
+            'product_id', oi.product_id,
+            'product_name', p.product_name,
+            'quantity', oi.quantity,
+            'price', oi.price
+          )
+        ) as items
+      FROM orders o
+      LEFT JOIN users u ON o.user_id = u.user_id
+      LEFT JOIN order_items oi ON o.id = oi.order_id
+      LEFT JOIN products p ON oi.product_id = p.product_id
+      ${whereClause}
+      GROUP BY o.id
+      ORDER BY o.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    const finalParams = [...params, limit, offset];
+    console.log("SQL Query:", ordersQuery);
+    console.log("Query params:", finalParams);
+
+    const orders = await db.query(ordersQuery, finalParams);
+
+    // Get total count for pagination
+    const countQuery = `
+      SELECT COUNT(DISTINCT o.id) as total
+      FROM orders o
+      LEFT JOIN users u ON o.user_id = u.user_id
+      ${whereClause}
+    `;
+
+    const countResult = await db.queryFirst(countQuery, params);
+    const total = countResult?.total || 0;
+
+    return NextResponse.json({
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching admin orders:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch orders",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    // Get token from Authorization header
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Verify token and check if user is admin
+    const payload = await jwtService.verifyToken(token);
+    const user = await db.queryFirst(
+      "SELECT user_id, role FROM users WHERE email = ?",
+      [payload.username]
+    );
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.role !== "admin") {
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 403 }
+      );
+    }
+
+    const { orderId, status } = await req.json();
+
+    // Validate status
+    const validStatuses = [
+      "pending",
+      "paid",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ];
+
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    }
+
+    // Update order status
+    await db.update(
+      "UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ?",
+      [status, orderId]
+    );
+
+    return NextResponse.json({
+      message: "Order status updated successfully",
+      orderId,
+      status,
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    return NextResponse.json(
+      { error: "Failed to update order status" },
+      { status: 500 }
+    );
+  }
+}

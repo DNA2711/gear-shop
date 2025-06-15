@@ -88,7 +88,7 @@ export async function PUT(
       "SELECT user_id, email FROM users WHERE user_id = ?",
       [userId]
     );
-    
+
     if (!existingUser) {
       return NextResponse.json(
         { success: false, message: "Người dùng không tồn tại" },
@@ -158,7 +158,9 @@ export async function PUT(
     updateValues.push(userId);
 
     // Update query
-    const updateQuery = `UPDATE users SET ${updateFields.join(", ")} WHERE user_id = ?`;
+    const updateQuery = `UPDATE users SET ${updateFields.join(
+      ", "
+    )} WHERE user_id = ?`;
     await db.update(updateQuery, updateValues);
 
     // Get updated user
