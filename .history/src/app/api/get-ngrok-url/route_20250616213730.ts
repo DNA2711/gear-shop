@@ -1,0 +1,179 @@
+import { NextResponse } from "next/server";
+import { spawn } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
+
+interface NgrokTunnel {
+  name: string;
+  proto: string;
+  public_url: string;
+}
+
+interface NgrokResponse {
+  tunnels: NgrokTunnel[];
+}
+
+let ngrokUrl: string | null = null;
+let ngrokProcess: any = null;
+
+export async function GET(request: Request) {
+  try {
+    // If we already have a URL, return it
+    if (ngrokUrl) {
+      return NextResponse.json({ url: ngrokUrl });
+    }
+
+    try {
+      // Get the current port from the request URL
+      const url = new URL(request.url);
+      const currentPort = url.port || "3001";
+
+      // Try to find ngrok in PATH first
+      let ngrokPath = "ngrok";
+      try {
+        const { stdout } = await execAsync("where ngrok");
+        ngrokPath = stdout.trim().split("\n")[0];
+      } catch (error) {
+        // If not found in PATH, try the default installation path
+        ngrokPath = `C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Ngrok.Ngrok_Microsoft.Winget.Source_8wekyb3d8bbwe\\ngrok.exe`;
+      }
+
+      console.log("Starting ngrok connection...");
+      console.log("Port:", currentPort);
+      console.log("Ngrok path:", ngrokPath);
+
+      // Set auth token first if not already set
+      if (process.env.NGROK_AUTH_TOKEN) {
+        console.log("Setting auth token...");
+        await new Promise((resolve, reject) => {
+          const authProcess = spawn(
+            ngrokPath,
+            ["authtoken", process.env.NGROK_AUTH_TOKEN!],
+            {
+              stdio: "pipe",
+            }
+          );
+
+          let hasResolved = false;
+          authProcess.stdout?.on("data", (data) => {
+            console.log("Auth stdout:", data.toString());
+            if (!hasResolved) {
+              hasResolved = true;
+              resolve(null);
+            }
+          });
+
+          authProcess.stderr?.on("data", (data) => {
+            console.log("Auth stderr:", data.toString());
+          });
+
+          authProcess.on("close", (code) => {
+            console.log("Auth process closed with code:", code);
+            if (!hasResolved) {
+              hasResolved = true;
+              if (code === 0) {
+                resolve(null);
+              } else {
+                reject(new Error(`Auth failed with code ${code}`));
+              }
+            }
+          });
+        });
+      }
+
+      // Start ngrok process in background
+      console.log("Starting ngrok tunnel...");
+      ngrokProcess = spawn(ngrokPath, ["http", currentPort], {
+        stdio: "pipe",
+        detached: false,
+      });
+
+      ngrokProcess.stdout?.on("data", (data: Buffer) => {
+        console.log("Ngrok stdout:", data.toString());
+      });
+
+      ngrokProcess.stderr?.on("data", (data: Buffer) => {
+        console.log("Ngrok stderr:", data.toString());
+      });
+
+      // Give ngrok more time to start
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // Wait for ngrok to start and get URL
+      let retries = 0;
+      const maxRetries = 15;
+      const retryDelay = 2000; // 2 seconds
+
+      while (retries < maxRetries) {
+        try {
+          const fetch = (await import("node-fetch")).default;
+          console.log(
+            `Attempting to connect to ngrok API (attempt ${
+              retries + 1
+            }/${maxRetries})`
+          );
+
+          const response = await fetch("http://localhost:4040/api/tunnels");
+
+          if (response.ok) {
+            const data = (await response.json()) as NgrokResponse;
+            console.log("Ngrok API response:", data);
+
+            if (data.tunnels && data.tunnels.length > 0) {
+              // Try https first, then http
+              let tunnel = data.tunnels.find((t) => t.proto === "https");
+              if (!tunnel) {
+                tunnel = data.tunnels.find((t) => t.proto === "http");
+              }
+
+              if (tunnel) {
+                ngrokUrl = tunnel.public_url;
+                console.log("Found ngrok URL:", ngrokUrl);
+                return NextResponse.json({ url: ngrokUrl, port: currentPort });
+              }
+            } else {
+              console.log("No tunnels found in response");
+            }
+          } else {
+            console.log("Ngrok API responded with status:", response.status);
+            const responseText = await response.text();
+            console.log("Response body:", responseText);
+          }
+        } catch (error) {
+          console.log(`Retry ${retries + 1}/${maxRetries} failed:`, error);
+        }
+
+        retries++;
+        if (retries < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
+      }
+
+      throw new Error("Failed to get ngrok URL after multiple retries. Make sure ngrok is installed and running, or try starting it manually with: ngrok http " + currentPort);
+    } catch (error) {
+      console.error("Error connecting to ngrok:", error);
+
+      // Kill ngrok process if it was started
+      if (ngrokProcess) {
+        ngrokProcess.kill();
+        ngrokProcess = null;
+      }
+
+      return NextResponse.json(
+        {
+          error: "Failed to connect to ngrok",
+          details: error instanceof Error ? error.message : String(error),
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("Error in get-ngrok-url:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
