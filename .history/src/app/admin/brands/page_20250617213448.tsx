@@ -292,9 +292,9 @@ export default function BrandsPage() {
           src={brand.logo_code}
           alt={brand.brand_name}
           className="h-8 w-8 object-contain"
-          style={{
-            background: "transparent",
-            backgroundColor: "transparent",
+          style={{ 
+            background: 'transparent',
+            backgroundColor: 'transparent'
           }}
           onError={(e) => {
             const target = e.target as HTMLImageElement;

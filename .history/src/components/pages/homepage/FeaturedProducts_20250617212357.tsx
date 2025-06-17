@@ -6,9 +6,9 @@ import type { ProductWithDetails } from "@/types/product";
 import { Star, Zap, ArrowRight } from "lucide-react";
 
 const ProductCardSkeleton = () => (
-  <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700/50 overflow-hidden animate-pulse h-full flex flex-col">
+  <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700/50 overflow-hidden animate-pulse">
     <div className="aspect-[4/3] bg-slate-700/50"></div>
-    <div className="p-3 flex flex-col flex-grow">
+    <div className="p-3">
       <div className="flex items-center gap-1 mb-1.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <div key={star} className="w-3 h-3 bg-slate-700/50 rounded"></div>
@@ -16,14 +16,12 @@ const ProductCardSkeleton = () => (
         <div className="w-6 h-3 bg-slate-700/50 rounded ml-1"></div>
       </div>
       <div className="w-16 h-3 bg-slate-700/50 rounded mb-1"></div>
-      <div className="w-full min-h-[2.5rem] bg-slate-700/50 rounded mb-2"></div>
-      <div className="mt-auto">
-        <div className="w-20 h-4 bg-slate-700/50 rounded mb-1"></div>
-        <div className="w-24 h-6 bg-slate-700/50 rounded mb-2"></div>
-        <div className="flex items-center justify-between">
-          <div className="w-12 h-3 bg-slate-700/50 rounded"></div>
-          <div className="w-6 h-6 bg-slate-700/50 rounded-full"></div>
-        </div>
+      <div className="w-full h-8 bg-slate-700/50 rounded mb-2"></div>
+      <div className="w-20 h-4 bg-slate-700/50 rounded mb-1"></div>
+      <div className="w-24 h-6 bg-slate-700/50 rounded mb-2"></div>
+      <div className="flex items-center justify-between">
+        <div className="w-12 h-3 bg-slate-700/50 rounded"></div>
+        <div className="w-6 h-6 bg-slate-700/50 rounded-full"></div>
       </div>
     </div>
   </div>

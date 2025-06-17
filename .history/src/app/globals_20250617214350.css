@@ -204,28 +204,17 @@
     background-color: transparent;
   }
 
-  /* Xóa nền trắng - Phương pháp Multiply (mặc định) */
-  .remove-white-bg-multiply {
-    mix-blend-mode: multiply;
-    filter: contrast(1.1) brightness(1.05);
-  }
-
-  /* Xóa nền trắng - Phương pháp Screen (cho nền tối) */
-  .remove-white-bg-screen {
-    mix-blend-mode: screen;
-    filter: contrast(1.2) brightness(0.9);
-  }
-
-  /* Xóa nền trắng - Phương pháp Advanced (sử dụng mask) */
-  .remove-white-bg-advanced {
-    filter: contrast(1.15) brightness(1.1) saturate(1.1);
-    position: relative;
-  }
-
-  /* Compatibility fallback */
+  /* Xóa nền trắng khi cần thiết */
   .remove-white-bg {
+    /* Approach 1: Mix blend mode nhẹ nhàng */
     mix-blend-mode: multiply;
     filter: contrast(1.1) brightness(1.05);
+  }
+
+  /* Alternative approach cho dark backgrounds */
+  .dark .remove-white-bg {
+    mix-blend-mode: screen;
+    filter: contrast(1.2) brightness(0.9) invert(1);
   }
 
   /* CSS-only white background removal */
@@ -234,28 +223,17 @@
       position: relative;
       background: transparent;
     }
-
+    
     .remove-white-bg-advanced::before {
-      content: "";
+      content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(
-          45deg,
-          transparent 48%,
-          white 49%,
-          white 51%,
-          transparent 52%
-        ),
-        linear-gradient(
-          -45deg,
-          transparent 48%,
-          white 49%,
-          white 51%,
-          transparent 52%
-        );
+      background: 
+        linear-gradient(45deg, transparent 48%, white 49%, white 51%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, white 49%, white 51%, transparent 52%);
       background-size: 4px 4px;
       mix-blend-mode: difference;
       pointer-events: none;

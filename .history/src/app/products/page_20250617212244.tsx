@@ -267,7 +267,7 @@ export default function ProductsPage() {
                     </div>
 
                     {/* Price */}
-                    <div className="mb-4 mt-auto">
+                    <div className="mb-4">
                       <div className="flex items-center gap-2">
                         <span className="text-xl font-bold text-blue-600">
                           {formatPrice(product.price)}

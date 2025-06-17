@@ -54,43 +54,43 @@ const BrandLogo: React.FC<BrandLogoProps> = ({
   // CSS để xóa nền trắng với nhiều phương pháp
   const getImageStyles = () => {
     if (!removeWhiteBackground) {
-      return { background: "transparent" };
+      return { background: 'transparent' };
     }
 
     switch (whiteBgMethod) {
       case "multiply":
         return {
-          filter: "contrast(1.1) brightness(1.05)",
-          mixBlendMode: "multiply" as const,
-          background: "transparent",
+          filter: 'contrast(1.1) brightness(1.05)',
+          mixBlendMode: 'multiply' as const,
+          background: 'transparent',
         };
-
+      
       case "screen":
         return {
-          filter: "contrast(1.2) brightness(0.9)",
-          mixBlendMode: "screen" as const,
-          background: "transparent",
+          filter: 'contrast(1.2) brightness(0.9)',
+          mixBlendMode: 'screen' as const,
+          background: 'transparent',
         };
-
+      
       case "advanced":
         return {
-          filter: "contrast(1.15) brightness(1.1) saturate(1.1)",
-          background: "transparent",
+          filter: 'contrast(1.15) brightness(1.1) saturate(1.1)',
+          background: 'transparent',
           // Sử dụng CSS mask để loại bỏ pixel trắng
           WebkitMask: `
             radial-gradient(circle at center, black 60%, transparent 70%),
             linear-gradient(to right, black, black)
           `,
-          WebkitMaskComposite: "intersect",
+          WebkitMaskComposite: 'intersect',
           mask: `
             radial-gradient(circle at center, black 60%, transparent 70%),
             linear-gradient(to right, black, black)
           `,
-          maskComposite: "intersect",
+          maskComposite: 'intersect',
         };
-
+      
       default:
-        return { background: "transparent" };
+        return { background: 'transparent' };
     }
   };
 
@@ -121,17 +121,17 @@ const BrandLogo: React.FC<BrandLogoProps> = ({
             onError={handleImageError}
             loading="lazy"
           />
-
+          
           {/* Overlay để enhance white removal nếu cần */}
           {removeWhiteBackground && whiteBgMethod === "advanced" && (
-            <div
+            <div 
               className="absolute inset-0 pointer-events-none opacity-20"
               style={{
                 background: `
                   radial-gradient(circle at 20% 20%, transparent 40%, rgba(255,255,255,0.1) 41%, rgba(255,255,255,0.1) 60%, transparent 61%),
                   radial-gradient(circle at 80% 80%, transparent 40%, rgba(255,255,255,0.1) 41%, rgba(255,255,255,0.1) 60%, transparent 61%)
                 `,
-                mixBlendMode: "difference",
+                mixBlendMode: 'difference'
               }}
             />
           )}

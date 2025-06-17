@@ -277,9 +277,9 @@ export default function BrandsPage() {
             src={brand.logo_code}
             alt={brand.brand_name}
             className="h-8 w-8 object-contain"
-            style={{
-              background: "transparent",
-              backgroundColor: "transparent",
+            style={{ 
+              background: 'transparent',
+              backgroundColor: 'transparent'
             }}
           />
         </div>
@@ -287,15 +287,11 @@ export default function BrandsPage() {
     }
 
     return (
-      <div className="h-10 w-10 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200">
+      <div className="h-10 w-10 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
         <img
           src={brand.logo_code}
           alt={brand.brand_name}
           className="h-8 w-8 object-contain"
-          style={{
-            background: "transparent",
-            backgroundColor: "transparent",
-          }}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = "none";

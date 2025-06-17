@@ -251,12 +251,7 @@ export default function ProductsPage() {
                         {product.product_name}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-gray-500 line-clamp-1">
-                        <span>
-                          Mã:{" "}
-                          {product.product_code.length > 12
-                            ? product.product_code.substring(0, 12) + "..."
-                            : product.product_code}
-                        </span>
+                        <span>Mã: {product.product_code.length > 12 ? product.product_code.substring(0, 12) + "..." : product.product_code}</span>
                         {product.brand_name && (
                           <>
                             <span>•</span>
@@ -267,7 +262,7 @@ export default function ProductsPage() {
                     </div>
 
                     {/* Price */}
-                    <div className="mb-4 mt-auto">
+                    <div className="mb-4">
                       <div className="flex items-center gap-2">
                         <span className="text-xl font-bold text-blue-600">
                           {formatPrice(product.price)}
