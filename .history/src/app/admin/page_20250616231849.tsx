@@ -36,7 +36,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           {/* Decorative elements */}
           <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-white/10"></div>
           <div className="absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-white/5"></div>
@@ -97,15 +97,17 @@ export default function AdminDashboard() {
                 <div className="text-xs text-blue-100">Quản lý kho hàng</div>
               </div>
             </button>
-            
+
             <button className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 text-white transition-all hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg hover:scale-105">
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
                 <div className="text-sm font-medium">Xem đơn hàng</div>
-                <div className="text-xs text-emerald-100">Theo dõi bán hàng</div>
+                <div className="text-xs text-emerald-100">
+                  Theo dõi bán hàng
+                </div>
               </div>
             </button>
-            
+
             <button className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white transition-all hover:from-purple-600 hover:to-purple-700 hover:shadow-lg hover:scale-105">
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
@@ -113,12 +115,14 @@ export default function AdminDashboard() {
                 <div className="text-xs text-purple-100">Phân tích dữ liệu</div>
               </div>
             </button>
-            
+
             <button className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 p-4 text-white transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-lg hover:scale-105">
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative">
                 <div className="text-sm font-medium">Quản lý người dùng</div>
-                <div className="text-xs text-orange-100">Hệ thống tài khoản</div>
+                <div className="text-xs text-orange-100">
+                  Hệ thống tài khoản
+                </div>
               </div>
             </button>
           </div>
