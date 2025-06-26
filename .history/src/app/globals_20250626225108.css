@@ -1,0 +1,338 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "tw-animate-css";
+
+@layer base {
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    scroll-snap-type: y mandatory;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-feature-settings: "liga" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fix for price display text clipping */
+  .price-text {
+    line-height: 1.5;
+    padding: 0.125rem 0;
+    min-height: 1.5em;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Smooth scroll snap for sections */
+  .scroll-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin: 0;
+  }
+
+  /* Responsive padding for sections */
+  @media (min-width: 640px) {
+    .scroll-section {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .scroll-section {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  /* First section with reduced top padding */
+  .scroll-section:first-of-type {
+    padding-top: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .scroll-section:first-of-type {
+      padding-top: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .scroll-section:first-of-type {
+      padding-top: 2rem;
+    }
+  }
+
+  /* Last section with reduced bottom padding */
+  .scroll-section:last-of-type {
+    padding-bottom: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .scroll-section:last-of-type {
+      padding-bottom: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .scroll-section:last-of-type {
+      padding-bottom: 2rem;
+    }
+  }
+}
+
+@layer components {
+  .seamless-background {
+    background: linear-gradient(
+      135deg,
+      var(--background) 0%,
+      var(--muted) 50%,
+      var(--background) 100%
+    );
+  }
+
+  .brand-logo,
+  .brand-logo img {
+    filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%)
+      hue-rotate(0deg) brightness(0%) contrast(100%);
+  }
+
+  .remove-white-bg-multiply {
+    mix-blend-mode: multiply;
+  }
+
+  .remove-white-bg-screen {
+    mix-blend-mode: screen;
+  }
+
+  .remove-white-bg-advanced {
+    position: relative;
+    background: white;
+  }
+
+  .remove-white-bg {
+    background: white;
+  }
+
+  .remove-white-bg-advanced {
+    position: relative;
+  }
+
+  .remove-white-bg-advanced::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    mix-blend-mode: difference;
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+
+  .dark .custom-scrollbar {
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+  }
+}

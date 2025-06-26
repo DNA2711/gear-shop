@@ -3,20 +3,29 @@ import { notFound } from "next/navigation";
 import { ProductWithDetails } from "@/types/product";
 import ProductDetail from "@/components/pages/products/ProductDetail";
 import ProductDetailSkeleton from "@/components/pages/products/ProductDetailSkeleton";
-import { dbHelpers } from "@/lib/database";
 
 async function fetchProduct(
   productId: string
 ): Promise<ProductWithDetails | null> {
   try {
-    const id = parseInt(productId);
-    if (isNaN(id)) {
-      return null;
+    const response = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/products/${productId}`,
+      {
+        cache: "no-store", // Always fetch fresh data
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error("Failed to fetch product");
     }
 
-    // Query database directly instead of HTTP request
-    const product = await dbHelpers.findProductById(id);
-    return product;
+    const result = await response.json();
+    return result.success ? result.data : null;
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;

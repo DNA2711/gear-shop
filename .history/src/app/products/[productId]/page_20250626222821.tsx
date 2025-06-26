@@ -9,13 +9,19 @@ async function fetchProduct(
   productId: string
 ): Promise<ProductWithDetails | null> {
   try {
+    console.log("Fetching product with ID:", productId);
+    
+    // Parse productId to number
     const id = parseInt(productId);
     if (isNaN(id)) {
+      console.log("Invalid product ID:", productId);
       return null;
     }
 
-    // Query database directly instead of HTTP request
+    // Direct database call instead of HTTP fetch to avoid URL issues on Vercel
     const product = await dbHelpers.findProductById(id);
+    console.log("Product found:", !!product);
+    
     return product;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -28,19 +34,26 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  console.log("ProductPage component called");
+  
   const { productId } = await params;
+  console.log("Requested productId:", productId);
 
   // Validate productId
   const id = parseInt(productId);
   if (isNaN(id)) {
+    console.log("Invalid productId, calling notFound()");
     notFound();
   }
 
   const product = await fetchProduct(productId);
 
   if (!product) {
+    console.log("Product not found, calling notFound()");
     notFound();
   }
+
+  console.log("Rendering product:", product.product_name);
 
   return (
     <Suspense fallback={<ProductDetailSkeleton />}>
