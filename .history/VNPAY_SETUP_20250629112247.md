@@ -1,0 +1,301 @@
+# Hướng dẫn cấu hình VNPay
+
+## Tổng quan
+
+Hệ thống thanh toán sử dụng VNPay API với strategy khác nhau cho development và production:
+
+- **Development**: Redirect về success page với polling để check payment status
+- **Production**: Sử dụng VNPay callback API để nhận kết quả thanh toán
+
+Người dùng sẽ được chuyển hướng đến trang thanh toán của VNPay để hoàn tất giao dịch.
+
+## Cấu hình Environment Variables
+
+Thêm các biến môi trường sau vào file `.env` của bạn:
+
+```env
+# VNPay Configuration
+VNPAY_TMN_CODE="your-vnpay-terminal-code"
+VNPAY_SECURE_SECRET="your-vnpay-secure-secret"
+VNPAY_HOST="https://sandbox.vnpayment.vn"  # Sandbox
+# VNPAY_HOST="https://vnpayment.vn"          # Production
+
+# Base URL for callbacks
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"  # Development
+# NEXT_PUBLIC_BASE_URL="https://yourdomain.com"  # Production
+```
+
+### Sandbox (Môi trường test)
+
+Để test với VNPay Sandbox, bạn có thể sử dụng thông tin demo:
+
+- **TMN Code**: `DEMO` hoặc đăng ký tại [sandbox.vnpayment.vn](https://sandbox.vnpayment.vn)
+- **Secure Secret**: `DEMO_SECRET` hoặc lấy từ sandbox portal
+- **Host**: `https://sandbox.vnpayment.vn`
+
+### Production (Môi trường thật)
+
+Để chuyển sang production:
+
+1. Đăng ký merchant tại [vnpayment.vn](https://vnpayment.vn)
+2. Lấy TMN Code và Secure Secret từ VNPay
+3. Cập nhật `VNPAY_HOST` thành `https://vnpayment.vn`
+4. Đặt `testMode: false` trong VNPay config
+
+## Flow thanh toán
+
+### 1. Tạo đơn hàng
+
+- User điền thông tin và nhấn "Đặt hàng"
+- Server tạo order với status `pending`
+- Hiển thị modal VNPay Payment
+
+### 2. Chuyển hướng VNPay
+
+- User nhấn "Thanh toán ngay"
+- Server gọi API tạo VNPay payment URL với return URL phù hợp:
+  - **Development**: `localhost:3000/checkout/success?orderId=123&from=vnpay`
+  - **Production**: `yourdomain.com/api/vnpay/callback`
+- User được redirect đến VNPay gateway
+
+### 3. Thanh toán tại VNPay
+
+- User chọn phương thức thanh toán (ATM, Visa/Master, QR...)
+- Hoàn tất thanh toán tại VNPay
+
+### 4. Xử lý kết quả
+
+#### Development Mode:
+
+- **Mock VNPay Gateway**: Redirect đến `/vnpay/checkout` - trang giả lập VNPay
+- Trang mock có đầy đủ UI giống VNPay thật với các phương thức thanh toán
+- User có thể chọn "Thanh toán thành công" hoặc "Thanh toán thất bại" để test
+- Tự động cập nhật order status và redirect về success page
+- **Không cần polling** - kết quả trả về ngay lập tức
+- **Hoàn toàn không cần internet/VNPay API** trong development
+
+#### Production Mode:
+
+- VNPay callback về `/api/vnpay/callback`
+- Server verify signature và cập nhật order status
+- User được redirect về success page hoặc error page
+
+## API Endpoints mới
+
+### POST `/api/vnpay/create-payment-url`
+
+Tạo payment URL để redirect đến VNPay.
+
+**Request:**
+
+```json
+{
+  "orderId": "12345",
+  "amount": 100000,
+  "orderInfo": "Thanh toán đơn hàng #12345"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "paymentUrl": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?...",
+  "orderId": "12345"
+}
+```
+
+### GET `/api/vnpay/callback`
+
+Xử lý callback từ VNPay sau khi thanh toán (chỉ dùng trong production).
+
+**Query Parameters:** Các tham số do VNPay gửi về
+
+**Actions:**
+
+- Verify signature
+- Update order status
+- Redirect user đến success/error page
+
+### POST `/api/vnpay/simulate-payment` (Development Only)
+
+Simulate payment callback trong development mode.
+
+**Request:**
+
+```json
+{
+  "orderId": "12345",
+  "status": "paid" // hoặc "failed"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "orderId": "12345",
+  "status": "paid",
+  "message": "Order 12345 status updated to paid"
+}
+```
+
+**Lưu ý:** API này chỉ hoạt động khi `NODE_ENV !== "production"`
+
+## Components mới
+
+### `VNPayPayment`
+
+Thay thế component `VNPayQRCode` cũ:
+
+```tsx
+<VNPayPayment
+  orderId={orderId}
+  amount={totalAmount}
+  orderInfo={`Thanh toán đơn hàng #${orderId}`}
+  onPaymentSuccess={handlePaymentSuccess}
+/>
+```
+
+**Props:**
+
+- `orderId`: ID đơn hàng
+- `amount`: Số tiền (VNĐ)
+- `orderInfo`: Mô tả giao dịch
+- `onPaymentSuccess`: Callback khi thanh toán thành công
+
+## Testing
+
+### Thông tin test VNPay Sandbox
+
+**Thẻ ATM nội địa:**
+
+- Số thẻ: `9704198526191432198`
+- Tên chủ thẻ: `NGUYEN VAN A`
+- Ngày phát hành: `07/15`
+- Mật khẩu: `123456`
+
+**Thẻ quốc tế:**
+
+- Số thẻ: `4000000000000002`
+- CVV: `123`
+- Ngày hết hạn: `12/25`
+
+### Test scenarios
+
+1. **Thanh toán thành công**: Sử dụng thông tin test card hợp lệ
+2. **Thanh toán thất bại**: Nhập sai thông tin hoặc hủy thanh toán
+3. **Callback error**: Test xử lý lỗi callback
+4. **Order not found**: Test với orderId không tồn tại
+
+## Troubleshooting
+
+### Lỗi thường gặp
+
+1. **"Không tìm thấy website"** (FIXED): Đã được fix bằng mock VNPay cho development
+2. **Invalid signature**: Kiểm tra VNPAY_SECURE_SECRET (chỉ production)
+3. **Order not found**: Đảm bảo orderId tồn tại trong database
+4. **Callback error**: Kiểm tra NEXT_PUBLIC_BASE_URL đúng (chỉ production)
+5. **Payment URL not created**: Kiểm tra VNPAY_TMN_CODE và cấu hình (chỉ production)
+6. **Số tiền giao dịch không hợp lệ**: VNPay yêu cầu số tiền từ 5,000 VND đến dưới 1 tỷ VND
+
+### Development vs Production
+
+**Development (localhost):**
+
+- ✅ Hoạt động 100% offline
+- ✅ Không cần VNPay credentials
+- ✅ Không cần internet
+- ✅ UI giống VNPay thật
+- ✅ Test được cả success/failed cases
+
+**Production (deployed):**
+
+- ✅ Sử dụng VNPay API thật
+- ✅ Cần VNPay credentials
+- ✅ Cần HTTPS domain
+- ✅ Callback thực tế từ VNPay
+
+### Logs
+
+Kiểm tra logs trong browser console và server logs để debug:
+
+```bash
+# Server logs
+npm run dev
+
+# Browser console
+F12 -> Console tab
+```
+
+## Migration từ QR Code
+
+### Files đã thay đổi
+
+1. **Đã xóa**:
+   - `src/components/checkout/VNPayQRCode.tsx`
+   - `src/app/api/get-ngrok-url/route.ts` (ngrok API)
+2. **Đã thêm**:
+   - `src/components/checkout/VNPayPayment.tsx`
+   - `src/app/api/vnpay/create-payment-url/route.ts`
+   - `src/app/api/vnpay/callback/route.ts`
+   - `src/app/api/vnpay/simulate-payment/route.ts` (development only)
+   - `src/app/vnpay/checkout/page.tsx` (mock VNPay gateway)
+3. **Đã cập nhật**:
+   - `src/app/checkout/page.tsx`
+   - `src/app/checkout/success/page.tsx`
+
+### Flow Testing
+
+**Cách test trong development:**
+
+1. Tạo đơn hàng tại `/checkout`
+2. Nhấn "Thanh toán VNPay"
+3. Được redirect đến `/vnpay/checkout` (mock VNPay)
+4. Chọn phương thức thanh toán (ATM/Visa/QR)
+5. Nhấn "Thanh toán thành công" hoặc "Thanh toán thất bại"
+6. Được redirect về `/checkout/success` với kết quả
+
+**UI Features:**
+
+- 🎨 Thiết kế giống VNPay thật
+- 🏧 Các phương thức thanh toán (ATM, Visa, QR)
+- ⚠️ Warning rõ ràng về development mode
+- ✅ Test cả success và failed cases
+- 🔄 Spinner animation khi processing
+
+**Lợi ích:**
+
+- ✅ Không cần ngrok, tunneling tools
+- ✅ Hoạt động offline 100%
+- ✅ Test UI/UX như thật
+- ✅ Debug dễ dàng
+- ✅ Fast development cycle
+
+### Breaking changes
+
+- Component `VNPayQRCode` không còn tồn tại
+- **Hoàn toàn loại bỏ ngrok** - không còn cần thiết
+- API `/api/get-ngrok-url` đã bị xóa
+- Environment variables mới cho VNPay
+- Flow khác nhau cho development vs production
+
+## Validation & Bảo mật
+
+### Validation số tiền
+
+- **Tối thiểu**: 5,000 VND
+- **Tối đa**: dưới 1 tỷ VND (999,999,999 VND)
+- Validation được thực hiện ở cả frontend và backend
+- Nút thanh toán sẽ bị disable nếu số tiền không hợp lệ
+- Hiển thị cảnh báo rõ ràng cho người dùng
+
+### Bảo mật
+
+- Luôn verify signature từ VNPay callback
+- Sử dụng HTTPS cho production
+- Bảo mật VNPAY_SECURE_SECRET
+- Validate tất cả parameters từ callback
+- Kiểm tra format và range của amount trước khi gửi request

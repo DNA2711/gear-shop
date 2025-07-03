@@ -1,0 +1,65 @@
+3.3 KẾT QUẢ ĐẠT ĐƯỢC
+
+3.3.1 Chức năng đã hoàn thành
+
+Hệ thống Gear-Shop đã xây dựng và triển khai thành công các chức năng cốt lõi của một website thương mại điện tử chuyên về linh kiện máy tính. Dưới đây là mô tả chi tiết từng chức năng, phù hợp để chèn ảnh minh họa thực tế:
+
+1. Quản lý sản phẩm (Product Management)
+- Thêm mới sản phẩm: Quản trị viên có thể thêm sản phẩm với đầy đủ thông tin (tên, mô tả, giá, tồn kho, thương hiệu, danh mục, thông số kỹ thuật). Hỗ trợ upload nhiều ảnh cho mỗi sản phẩm (tối đa 5 ảnh), ảnh được lưu trực tiếp dưới dạng base64 trong cơ sở dữ liệu, đảm bảo hiển thị nhanh, không phụ thuộc dịch vụ ngoài. Có thể chọn ảnh đại diện, sắp xếp thứ tự ảnh. (Ảnh minh họa: giao diện thêm sản phẩm, upload ảnh, nhập thông số kỹ thuật)
+- Chỉnh sửa, cập nhật sản phẩm: Cho phép cập nhật mọi thông tin, thay đổi/bổ sung/xóa ảnh, cập nhật thông số kỹ thuật, giá, tồn kho, trạng thái hiển thị. (Ảnh minh họa: giao diện chỉnh sửa sản phẩm)
+- Xóa sản phẩm: Xóa sản phẩm khỏi hệ thống, đảm bảo dữ liệu nhất quán.
+- Quản lý tồn kho: Tự động cập nhật tồn kho khi có đơn hàng, cảnh báo tồn kho thấp.
+
+2. Quản lý danh mục, thương hiệu (Category & Brand Management)
+- Thêm, sửa, xóa danh mục/thương hiệu: Quản trị viên tạo mới, chỉnh sửa, xóa, bật/tắt trạng thái hiển thị các danh mục (CPU, RAM, VGA, v.v.) và thương hiệu (Asus, MSI, v.v.). (Ảnh minh họa: giao diện quản lý danh mục, thương hiệu)
+
+3. Tìm kiếm & lọc sản phẩm thông minh (Smart Search & Filtering)
+- Tìm kiếm theo tên sản phẩm: Hỗ trợ tìm kiếm nhanh, gợi ý thông minh khi nhập từ khóa.
+- Lọc sản phẩm: Lọc theo danh mục, thương hiệu, mức giá, trạng thái còn hàng, sắp xếp theo nhiều tiêu chí. (Ảnh minh họa: giao diện bộ lọc, kết quả tìm kiếm)
+
+4. Giỏ hàng & đặt hàng (Shopping Cart & Order Placement)
+- Thêm vào giỏ hàng: Người dùng thêm sản phẩm, chọn số lượng, hệ thống kiểm tra tồn kho, cập nhật tổng tiền theo thời gian thực.
+- Quản lý giỏ hàng: Tăng/giảm số lượng, xóa sản phẩm, lưu trạng thái giỏ hàng trên localStorage.
+- Đặt hàng: Điền thông tin nhận hàng, chọn phương thức thanh toán (COD hoặc VNPay), xác nhận đơn hàng. (Ảnh minh họa: giao diện giỏ hàng, đặt hàng)
+- Theo dõi trạng thái đơn hàng: Xem lịch sử, trạng thái đơn hàng (chờ xác nhận, đang giao, đã giao, đã hủy).
+
+5. Thanh toán trực tuyến (Online Payment Integration)
+- Thanh toán qua VNPay: Tích hợp cổng VNPay, thanh toán trực tuyến an toàn, xác nhận đơn hàng ngay sau khi thanh toán thành công. (Ảnh minh họa: giao diện chọn thanh toán, màn hình VNPay)
+- Thanh toán khi nhận hàng (COD): Hỗ trợ thanh toán truyền thống.
+
+6. Quản lý người dùng (User Management & Authentication)
+- Đăng ký, đăng nhập: Đăng ký tài khoản mới, xác thực email, đăng nhập bằng email/mật khẩu. (Ảnh minh họa: giao diện đăng ký, đăng nhập)
+- Phân quyền: Phân biệt quyền USER (khách hàng) và ADMIN (quản trị viên), bảo vệ chức năng quản trị bằng JWT và middleware.
+- Quản lý thông tin cá nhân: Cập nhật thông tin, đổi mật khẩu, xem lịch sử đơn hàng.
+- Quên mật khẩu: Hỗ trợ gửi email đặt lại mật khẩu.
+
+7. Quản trị viên (Admin Dashboard & Management)
+- Dashboard thống kê: Trang tổng quan hiển thị doanh số, số lượng đơn hàng, sản phẩm bán chạy, số lượng người dùng, biểu đồ doanh thu, báo cáo tồn kho. (Ảnh minh họa: dashboard admin)
+- Quản lý đơn hàng: Xem, cập nhật trạng thái, xác nhận, hủy đơn, theo dõi lịch sử đơn hàng.
+- Quản lý người dùng: Xem danh sách, phân quyền, khóa/mở tài khoản.
+- Quản lý sản phẩm, danh mục, thương hiệu: Đầy đủ thao tác CRUD, kiểm soát trạng thái hiển thị.
+
+8. Thông báo (Notification System)
+- Thông báo thời gian thực: Gửi thông báo cho người dùng khi có đơn hàng mới, thay đổi trạng thái đơn hàng, thông báo cho admin khi có đơn mới.
+- Thông báo qua email: Gửi email xác nhận đơn hàng, thông báo trạng thái đơn hàng.
+- Thông báo trong ứng dụng: Hiển thị qua biểu tượng chuông, lưu lịch sử thông báo.
+
+9. Hỗ trợ lắp ráp PC (PC Builder)
+- Chọn linh kiện, kiểm tra tương thích: Người dùng chọn từng linh kiện, hệ thống tự động kiểm tra tính tương thích (socket, RAM, nguồn điện, v.v.), cảnh báo nếu không phù hợp.
+- Gợi ý cấu hình: Đề xuất cấu hình mẫu theo nhu cầu (gaming, văn phòng, đồ họa).
+- Lưu và chia sẻ cấu hình: Lưu cấu hình, chia sẻ với bạn bè hoặc gửi cho admin tư vấn. (Ảnh minh họa: giao diện PC Builder)
+
+10. Bảo mật & tối ưu hệ thống (Security & Optimization)
+- Xác thực JWT: Bảo vệ API, phân quyền truy cập.
+- Mã hóa mật khẩu: Sử dụng bcryptjs.
+- Kiểm tra, lọc dữ liệu đầu vào: Ngăn chặn SQL injection, XSS.
+- Tối ưu hiệu năng: SSR, CSR, lazy loading, tối ưu truy vấn SQL, connection pool, responsive UI.
+
+11. Hỗ trợ đa nền tảng, đa thiết bị
+- Responsive Design: Giao diện thích ứng mọi kích thước màn hình.
+- Tối ưu SEO: SSR, meta tags, sitemap.
+
+---
+
+3.3.2 Hiệu năng hệ thống
+(Phần này sẽ được bổ sung chi tiết sau, tập trung vào mô tả chức năng trước theo yêu cầu.) 

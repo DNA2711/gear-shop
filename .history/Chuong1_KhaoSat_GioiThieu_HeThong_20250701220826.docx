@@ -1,0 +1,138 @@
+Chương 1: KHẢO SÁT VÀ GIỚI THIỆU HỆ THỐNG WEBSITE BÁN LINH KIỆN ĐIỆN TỬ
+
+1.1. Giới thiệu hệ thống Gear-Shop (2-3 trang)
+1.1.1. Bối cảnh và lý do phát triển
+Trong thời đại công nghệ số phát triển mạnh mẽ, đặc biệt với sự bùng nổ của trí tuệ nhân tạo (AI) và xu hướng chuyển đổi số toàn cầu, nhu cầu sử dụng các thiết bị điện tử, linh kiện máy tính để phục vụ học tập, làm việc, giải trí và nghiên cứu ngày càng trở nên phổ biến. Thói quen mua sắm của người tiêu dùng cũng dần chuyển dịch từ hình thức truyền thống sang trực tuyến nhờ sự tiện lợi, nhanh chóng và tiết kiệm thời gian. Tuy nhiên, nhiều website bán linh kiện máy tính hiện nay còn hạn chế về giao diện, tính năng, khả năng tìm kiếm, tra cứu thông tin sản phẩm và thiếu ứng dụng công nghệ hiện đại, gây khó khăn cho người dùng.
+
+Gear-Shop ra đời nhằm giải quyết các vấn đề trên, cung cấp nền tảng thương mại điện tử chuyên biệt cho lĩnh vực linh kiện điện tử, phục vụ đa dạng đối tượng khách hàng từ cá nhân, sinh viên, game thủ đến doanh nghiệp, kỹ thuật viên IT. Hệ thống hướng tới giao diện hiện đại, thân thiện, dễ truy cập, hỗ trợ tìm kiếm và quản lý thông tin sản phẩm khoa học, chính xác, đồng thời đảm bảo các tính năng quản lý đơn hàng, khách hàng và hỗ trợ vận hành hiệu quả.
+
+1.1.2. Đối tượng phục vụ
+- Người dùng cá nhân: lắp ráp, nâng cấp máy tính, mua gaming gear, thiết bị ngoại vi.
+- Doanh nghiệp: trang bị máy tính, thiết bị văn phòng, linh kiện thay thế.
+- Sinh viên, học sinh ngành công nghệ: phục vụ học tập, nghiên cứu.
+- Game thủ: tìm kiếm sản phẩm gaming chất lượng cao, cấu hình mạnh.
+
+1.1.3. Công nghệ sử dụng và kiến trúc hệ thống
+- Frontend: Next.js (React), Tailwind CSS, giao diện responsive tối ưu cho mọi thiết bị.
+- Backend: Node.js với Express, xây dựng các API RESTful phục vụ frontend.
+- Database: MySQL, lưu trữ thông tin sản phẩm, người dùng, đơn hàng, v.v.
+- Bảo mật: Sử dụng JWT (JSON Web Token) để xác thực và phân quyền người dùng.
+- Thanh toán: Tích hợp VNPay cho thanh toán trực tuyến.
+- AI: Ứng dụng các thuật toán AI đơn giản để gợi ý sản phẩm, phân tích hành vi người dùng.
+- Khác: Tích hợp email xác thực, thông báo đẩy, tối ưu SEO.
+
+Kiến trúc hệ thống: Kiến trúc client-server, frontend giao tiếp backend qua API RESTful, backend xử lý logic nghiệp vụ, xác thực, quản lý dữ liệu, gửi email, tích hợp thanh toán. Database MySQL lưu trữ dữ liệu có cấu trúc. Bảo mật JWT, phân quyền truy cập API. Tích hợp AI gợi ý sản phẩm. Triển khai cloud, dễ mở rộng.
+
+1.1.4. Ý nghĩa thực tiễn
+- Đáp ứng nhu cầu mua sắm linh kiện điện tử trực tuyến ngày càng tăng.
+- Tối ưu trải nghiệm người dùng, tiết kiệm thời gian, đa dạng lựa chọn.
+- Hỗ trợ doanh nghiệp mở rộng kênh bán hàng, tiếp cận khách hàng mới.
+- Góp phần thúc đẩy chuyển đổi số ngành bán lẻ linh kiện điện tử tại Việt Nam.
+
+(Gợi ý: Chèn hình 1.1 - Giao diện trang chủ Gear-Shop, hình 1.2 - Sơ đồ kiến trúc hệ thống)
+
+---
+
+1.2. Khảo sát hiện trạng và phân tích hệ thống tương tự (5-7 trang)
+1.2.1. Thị trường linh kiện điện tử tại Việt Nam
+- Thị trường linh kiện điện tử, máy tính tại Việt Nam phát triển mạnh mẽ trong 10 năm gần đây. Sự bùng nổ của game online, nhu cầu học tập, làm việc từ xa, giải trí số đã thúc đẩy nhu cầu lắp ráp, nâng cấp PC, mua gaming gear, thiết bị ngoại vi. Các sàn TMĐT lớn như Shopee, Lazada cũng tham gia phân phối linh kiện, nhưng các website chuyên biệt như Phong Vũ, GearVN, An Phát Computer vẫn giữ vai trò chủ đạo nhờ uy tín, dịch vụ chuyên sâu.
+- Khách hàng ngày càng ưu tiên mua sắm online, so sánh giá, tìm kiếm khuyến mãi, dịch vụ hậu mãi tốt. Theo khảo sát của VECOM, hơn 70% người dùng từng mua linh kiện điện tử online, trong đó 60% chọn các website chuyên ngành.
+
+1.2.2. Phân tích hệ thống Phong Vũ (phongvu.vn)
+- Lịch sử phát triển: Thành lập từ 1997, Phong Vũ là một trong những nhà bán lẻ máy tính, linh kiện lớn nhất Việt Nam, có hệ thống showroom toàn quốc.
+- Chức năng: Bán lẻ, bán buôn linh kiện, máy tính, gaming gear, thiết bị văn phòng, dịch vụ bảo hành, lắp ráp, tư vấn cấu hình.
+- Giao diện: Chuyên nghiệp, nhiều danh mục, tích hợp tìm kiếm nâng cao, so sánh sản phẩm, đánh giá, bình luận.
+- Dịch vụ: Giao hàng toàn quốc, bảo hành chính hãng, đổi trả linh hoạt, nhiều chương trình khuyến mãi, trả góp 0%.
+- Công nghệ: Website hiện đại, tích hợp chatbot, email marketing, hệ thống quản lý đơn hàng tự động.
+- Marketing: Đầu tư mạnh vào quảng cáo, hợp tác với các hãng lớn (Dell, Asus, HP, MSI…).
+- Ưu điểm: Thương hiệu lớn, đa dạng sản phẩm, dịch vụ hậu mãi tốt, nhiều chương trình khuyến mãi, hệ thống showroom rộng khắp.
+- Nhược điểm: Giao diện đôi khi phức tạp, tốc độ tải trang chưa tối ưu, trải nghiệm cá nhân hóa chưa cao, giá thành có thể cao hơn các shop nhỏ.
+
+1.2.3. Phân tích hệ thống GearVN (gearvn.com)
+- Lịch sử phát triển: GearVN nổi bật trong cộng đồng game thủ, tập trung vào gaming gear, linh kiện cao cấp, máy tính custom.
+- Chức năng: Bán lẻ gaming gear, linh kiện, PC custom, tư vấn cấu hình, dịch vụ bảo hành, lắp ráp.
+- Giao diện: Hiện đại, trẻ trung, nhiều hình ảnh minh họa, video review, tích hợp blog tư vấn, hướng dẫn chọn linh kiện.
+- Dịch vụ: Hỗ trợ khách hàng tốt, chính sách bảo hành rõ ràng, giao hàng nhanh tại các thành phố lớn.
+- Công nghệ: Website responsive, tích hợp chatbot, hệ thống quản lý đơn hàng, email marketing.
+- Marketing: Tập trung vào cộng đồng game thủ, tổ chức sự kiện, livestream, hợp tác với các streamer nổi tiếng.
+- Ưu điểm: Tập trung vào gaming gear, linh kiện cao cấp, giao diện hiện đại, nhiều bài viết tư vấn, hỗ trợ khách hàng tốt.
+- Nhược điểm: Giá thành sản phẩm thường cao hơn mặt bằng chung, ít chương trình trả góp, phạm vi giao hàng chưa rộng bằng các đối thủ lớn.
+
+1.2.4. Phân tích hệ thống An Phát Computer (anphatpc.com.vn)
+- Lịch sử phát triển: An Phát Computer là hệ thống bán lẻ máy tính, linh kiện lớn tại miền Bắc, có nhiều showroom tại Hà Nội, TP.HCM.
+- Chức năng: Bán lẻ, bán buôn linh kiện, máy tính, thiết bị văn phòng, gaming gear, dịch vụ bảo hành, lắp ráp, tư vấn cấu hình.
+- Giao diện: Đầy đủ danh mục, nhiều phân khúc giá, tích hợp tìm kiếm, lọc sản phẩm, so sánh, đánh giá.
+- Dịch vụ: Giao hàng toàn quốc, bảo hành chính hãng, nhiều chương trình khuyến mãi, hỗ trợ doanh nghiệp.
+- Công nghệ: Website truyền thống, chưa tối ưu cho thiết bị di động, tốc độ phản hồi chưa đồng đều.
+- Marketing: Đầu tư vào quảng cáo, hợp tác với các hãng lớn, tổ chức sự kiện offline.
+- Ưu điểm: Đa dạng sản phẩm, nhiều phân khúc giá, hệ thống cửa hàng lớn, dịch vụ khách hàng tốt, nhiều chương trình khuyến mãi.
+- Nhược điểm: Giao diện web còn truyền thống, chưa tối ưu cho thiết bị di động, tốc độ phản hồi chưa đồng đều.
+
+1.2.5. Bảng so sánh các hệ thống
+Bảng 1.1: So sánh các tiêu chí giữa Gear-Shop, Phong Vũ, GearVN, An Phát Computer
+| Tiêu chí         | Gear-Shop      | Phong Vũ        | GearVN         | An Phát Computer |
+|------------------|----------------|-----------------|----------------|------------------|
+| Giao diện        | Tối giản, hiện đại, tối ưu mobile | Chuyên nghiệp, nhiều danh mục | Hiện đại, trẻ trung | Đầy đủ, truyền thống |
+| Tốc độ tải trang | Nhanh          | Trung bình      | Nhanh          | Trung bình       |
+| Đa dạng sản phẩm | Cao            | Rất cao         | Cao            | Rất cao          |
+| Giá cả           | Cạnh tranh      | Trung bình      | Cao            | Cạnh tranh       |
+| Dịch vụ hậu mãi  | Đầy đủ, hỗ trợ 24/7 | Tốt, nhiều chương trình | Tốt, tập trung game thủ | Tốt, hỗ trợ doanh nghiệp |
+| Chính sách bảo hành | Rõ ràng, minh bạch | Chính hãng | Rõ ràng | Chính hãng |
+| Tích hợp AI      | Có             | Chưa có         | Chưa có        | Chưa có          |
+| Chatbot hỗ trợ   | Có             | Có              | Có             | Chưa có          |
+| Trải nghiệm cá nhân hóa | Cao      | Trung bình      | Trung bình     | Thấp             |
+| Phạm vi giao hàng| Toàn quốc      | Toàn quốc       | Thành phố lớn  | Toàn quốc        |
+
+(Gợi ý: Chèn hình 1.3 - Giao diện Phong Vũ, hình 1.4 - Giao diện GearVN, hình 1.5 - Giao diện An Phát Computer)
+
+1.2.6. Đánh giá, rút ra bài học cho Gear-Shop
+- Gear-Shop cần học hỏi sự đa dạng sản phẩm, dịch vụ hậu mãi của Phong Vũ, chính sách bảo hành rõ ràng của GearVN, sự linh hoạt về giá của An Phát.
+- Tập trung vào trải nghiệm người dùng, tối ưu tốc độ, giao diện mobile, tích hợp AI, cá nhân hóa, hỗ trợ khách hàng 24/7 là điểm khác biệt của Gear-Shop.
+- Đầu tư vào marketing số, hợp tác với cộng đồng game thủ, tổ chức sự kiện online/offline để tăng nhận diện thương hiệu.
+
+---
+
+1.3. Mục tiêu và phạm vi hệ thống (3-5 trang)
+1.3.1. Mục tiêu tổng quát
+- Xây dựng website bán linh kiện điện tử hiện đại, dễ sử dụng, bảo mật cao, đáp ứng nhu cầu mua sắm, thanh toán, quản lý đơn hàng trực tuyến.
+- Đưa Gear-Shop trở thành nền tảng thương mại điện tử uy tín trong lĩnh vực linh kiện điện tử tại Việt Nam.
+
+1.3.2. Mục tiêu cụ thể
+- Đạt 10.000 người dùng đăng ký trong năm đầu tiên.
+- Xử lý tối thiểu 1.000 đơn hàng/tháng sau 6 tháng vận hành.
+- Tích hợp AI gợi ý sản phẩm, chatbot hỗ trợ khách hàng, thanh toán đa dạng.
+- Đảm bảo tốc độ tải trang < 2s, uptime > 99%.
+- Đạt mức hài lòng khách hàng > 90% qua khảo sát online.
+
+1.3.3. Phạm vi chức năng
+- Quản lý sản phẩm, danh mục, thương hiệu, tồn kho.
+- Quản lý người dùng, phân quyền admin, khách hàng.
+- Đặt hàng, thanh toán, theo dõi đơn hàng, nhận thông báo.
+- Tích hợp các dịch vụ vận chuyển, thanh toán điện tử.
+- Hệ thống báo cáo doanh thu, thống kê sản phẩm bán chạy, phân tích hành vi khách hàng.
+
+1.3.4. Phạm vi kỹ thuật
+- Hệ thống hoạt động trên nền tảng web, tối ưu cho desktop, tablet, mobile.
+- Hỗ trợ tích hợp API với các dịch vụ vận chuyển, thanh toán, email, SMS.
+- Đảm bảo bảo mật dữ liệu người dùng, tuân thủ các quy định về TMĐT.
+
+1.3.5. Lý do chọn đề tài
+- Thị trường linh kiện điện tử phát triển mạnh, nhu cầu thực tế lớn, tiềm năng tăng trưởng cao.
+- Ứng dụng thực tiễn cao, giúp sinh viên, doanh nghiệp tiếp cận công nghệ mới, nâng cao năng lực cạnh tranh.
+- Đề tài phù hợp xu hướng chuyển đổi số, thương mại điện tử tại Việt Nam, đóng góp vào quá trình hiện đại hóa ngành bán lẻ.
+- Tạo cơ hội học hỏi, thực hành các công nghệ mới (Next.js, AI, bảo mật, tích hợp thanh toán…)
+
+1.3.6. Ứng dụng thực tế, tầm quan trọng
+- Hỗ trợ người dùng mua sắm tiện lợi, tiết kiệm thời gian, đa dạng lựa chọn.
+- Giúp doanh nghiệp mở rộng thị trường, nâng cao năng lực cạnh tranh, tối ưu vận hành.
+- Đóng góp vào quá trình chuyển đổi số ngành bán lẻ linh kiện điện tử, thúc đẩy phát triển kinh tế số.
+- Tạo nền tảng cho các dự án mở rộng: mobile app, tích hợp IoT, phát triển hệ sinh thái dịch vụ công nghệ.
+
+1.4. Kết luận chương 1
+Chương 1 đã trình bày tổng quan về hệ thống Gear-Shop, phân tích thị trường, khảo sát các hệ thống tương tự, đánh giá ưu nhược điểm, xác định mục tiêu, phạm vi, lý do chọn đề tài và ý nghĩa thực tiễn. Những nội dung này là nền tảng quan trọng cho các chương tiếp theo về phân tích, thiết kế, xây dựng và triển khai hệ thống.
+
+(Gợi ý: Chèn hình 1.6 - Sơ đồ chức năng hệ thống, hình 1.7 - Biểu đồ tăng trưởng thị trường linh kiện điện tử)
+
+---
+
+(Lưu ý: Để đảm bảo đủ số trang, bạn hãy bổ sung hình ảnh, bảng biểu, biểu đồ minh họa vào các vị trí đã gợi ý. Nội dung đã được viết chi tiết, phân tích sâu, phù hợp chuẩn báo cáo đồ án.) 

@@ -1,0 +1,77 @@
+Chương 1: KHẢO SÁT VÀ GIỚI THIỆU HỆ THỐNG WEBSITE BÁN LINH KIỆN ĐIỆN TỬ
+
+1.1. Mô tả bài toán
+Trong bối cảnh chuyển đổi số diễn ra mạnh mẽ trên toàn cầu, đặc biệt là sự phát triển vượt bậc của lĩnh vực thương mại điện tử, nhu cầu mua sắm các thiết bị điện tử, linh kiện máy tính phục vụ học tập, làm việc, giải trí và nghiên cứu ngày càng trở nên phổ biến và không thể thiếu. Người tiêu dùng hiện đại ngày càng ưu tiên sự tiện lợi, nhanh chóng, tiết kiệm thời gian, đồng thời mong muốn được tiếp cận thông tin sản phẩm một cách đầy đủ, minh bạch và có thể so sánh, lựa chọn dễ dàng. Tuy nhiên, thực tế cho thấy phần lớn các website bán linh kiện máy tính hiện nay vẫn còn nhiều hạn chế về giao diện, tính năng hỗ trợ, khả năng tìm kiếm, tra cứu thông tin sản phẩm và thiếu sự ứng dụng các công nghệ hiện đại nhằm nâng cao trải nghiệm người dùng. Điều này gây khó khăn cho khách hàng trong việc tiếp cận thông tin, lựa chọn sản phẩm phù hợp cũng như theo dõi quá trình mua hàng và nhận hỗ trợ sau bán.
+
+Bài toán đặt ra là xây dựng một hệ thống website thương mại điện tử chuyên cung cấp linh kiện máy tính, có giao diện hiện đại, thân thiện với người dùng, dễ dàng truy cập, hỗ trợ tìm kiếm và quản lý thông tin sản phẩm một cách khoa học, chính xác. Hệ thống cần đảm bảo các tính năng quản lý đơn hàng, khách hàng, hỗ trợ vận hành hiệu quả cho cả người dùng và người quản trị. Đặc biệt, việc tích hợp công nghệ AI vào hệ thống sẽ góp phần nâng cao trải nghiệm mua sắm, giúp người dùng dễ dàng tìm kiếm, khám phá sản phẩm và đưa ra quyết định mua hàng một cách thuận tiện, chính xác hơn. Mục tiêu cuối cùng là xây dựng một website thương mại điện tử hoàn chỉnh, có thể triển khai trên môi trường thực tế, mang đến giải pháp tối ưu trong việc mua bán, quản lý và vận hành quy trình kinh doanh linh kiện máy tính một cách hiệu quả, hiện đại và phù hợp với xu thế công nghệ hiện nay.
+
+1.2. Khảo sát hiện trạng các hệ thống tương tự
+
+1.2.1. Hệ thống Phong Vũ
+Phong Vũ là một trong những thương hiệu lâu đời và uy tín nhất trong lĩnh vực bán lẻ máy tính, linh kiện điện tử tại Việt Nam. Với hệ thống showroom phủ rộng khắp các thành phố lớn, Phong Vũ không chỉ cung cấp đa dạng sản phẩm mà còn chú trọng đến dịch vụ hậu mãi, bảo hành và hỗ trợ khách hàng. Giao diện website của Phong Vũ được thiết kế chuyên nghiệp, nhiều danh mục, tích hợp các tính năng tìm kiếm nâng cao, so sánh sản phẩm, đánh giá, bình luận. Tuy nhiên, do quy mô lớn và số lượng sản phẩm đa dạng, giao diện đôi khi trở nên phức tạp, tốc độ tải trang chưa thực sự tối ưu, trải nghiệm cá nhân hóa còn hạn chế. Giá thành sản phẩm tại Phong Vũ thường ở mức trung bình đến cao, phù hợp với khách hàng có nhu cầu về chất lượng dịch vụ và bảo hành chính hãng.
+
+1.2.2. Hệ thống GearVN
+GearVN nổi bật trong cộng đồng game thủ và những người yêu công nghệ nhờ tập trung vào các sản phẩm gaming gear, linh kiện cao cấp, máy tính custom. Website của GearVN mang phong cách hiện đại, trẻ trung, nhiều hình ảnh minh họa, video review, tích hợp blog tư vấn, hướng dẫn chọn linh kiện. Dịch vụ khách hàng của GearVN được đánh giá cao nhờ chính sách bảo hành rõ ràng, hỗ trợ nhanh chóng, giao hàng nhanh tại các thành phố lớn. Tuy nhiên, giá thành sản phẩm tại GearVN thường cao hơn mặt bằng chung, số lượng chương trình trả góp còn hạn chế, phạm vi giao hàng chủ yếu tập trung ở các đô thị lớn. GearVN phù hợp với nhóm khách hàng trẻ, game thủ, người dùng có nhu cầu về sản phẩm cao cấp và trải nghiệm dịch vụ chuyên sâu.
+
+1.2.3. Hệ thống An Phát Computer
+An Phát Computer là hệ thống bán lẻ máy tính, linh kiện lớn tại miền Bắc, có nhiều showroom tại Hà Nội và TP.HCM. An Phát nổi bật với sự đa dạng sản phẩm, nhiều phân khúc giá, dịch vụ khách hàng tốt, nhiều chương trình khuyến mãi, hỗ trợ doanh nghiệp. Giao diện website của An Phát đầy đủ danh mục, tích hợp các tính năng tìm kiếm, lọc sản phẩm, so sánh, đánh giá. Tuy nhiên, giao diện web còn mang tính truyền thống, chưa tối ưu cho thiết bị di động, tốc độ phản hồi chưa đồng đều. An Phát phù hợp với khách hàng doanh nghiệp, người dùng có nhu cầu mua sắm số lượng lớn hoặc tìm kiếm các sản phẩm ở nhiều phân khúc giá khác nhau.
+
+1.2.4. So sánh tổng quan và rút ra bài học cho Gear-Shop
+So sánh giữa Gear-Shop và các hệ thống trên, có thể thấy Gear-Shop hướng đến sự tối giản, hiện đại, tối ưu tốc độ tải trang, trải nghiệm cá nhân hóa, tích hợp AI gợi ý sản phẩm, hỗ trợ khách hàng 24/7 và tối ưu cho thiết bị di động. Gear-Shop tập trung vào nhóm khách hàng trẻ, game thủ, sinh viên, người dùng công nghệ, đồng thời học hỏi sự đa dạng sản phẩm, dịch vụ hậu mãi của Phong Vũ, chính sách bảo hành rõ ràng của GearVN và sự linh hoạt về giá của An Phát. Điểm khác biệt lớn nhất của Gear-Shop là ứng dụng công nghệ hiện đại, tối ưu trải nghiệm người dùng và khả năng mở rộng, tích hợp các dịch vụ mới trong tương lai.
+
+1.3. Lý do chọn đề tài
+Việc lựa chọn đề tài xây dựng hệ thống website bán linh kiện điện tử xuất phát từ nhiều lý do thực tiễn và ý nghĩa xã hội. Thứ nhất, thị trường linh kiện điện tử tại Việt Nam đang phát triển mạnh mẽ, nhu cầu mua sắm online ngày càng tăng, đặc biệt trong bối cảnh chuyển đổi số và xu hướng tiêu dùng hiện đại. Thứ hai, các hệ thống hiện có vẫn còn nhiều hạn chế về công nghệ, trải nghiệm người dùng, chưa thực sự đáp ứng được kỳ vọng của khách hàng về sự tiện lợi, minh bạch, cá nhân hóa và hỗ trợ thông minh. Thứ ba, việc phát triển một hệ thống thương mại điện tử chuyên biệt cho lĩnh vực linh kiện điện tử không chỉ giúp người tiêu dùng tiếp cận sản phẩm dễ dàng, tiết kiệm thời gian, chi phí mà còn hỗ trợ các doanh nghiệp, cửa hàng nâng cao năng lực cạnh tranh, mở rộng thị trường, tối ưu vận hành.
+
+Đề tài còn mang ý nghĩa thực tiễn cao đối với sinh viên, giúp tiếp cận và ứng dụng các công nghệ mới như Next.js, Node.js, MySQL, AI vào thực tiễn, phát triển kỹ năng tư duy hệ thống, giải quyết vấn đề, lập trình và phối hợp làm việc nhóm. Ngoài ra, hệ thống còn là cơ sở tham khảo, mở rộng và cải tiến cho các dự án thực tế khác trong lĩnh vực thương mại điện tử, góp phần thúc đẩy chuyển đổi số ngành bán lẻ linh kiện điện tử tại Việt Nam.
+
+1.4. Giới thiệu hệ thống Gear-Shop (2-3 trang)
+Gear-Shop là website thương mại điện tử chuyên cung cấp các sản phẩm linh kiện máy tính, thiết bị điện tử, gaming gear, phụ kiện công nghệ… Hệ thống được xây dựng với mục tiêu mang đến trải nghiệm mua sắm hiện đại, tiện lợi, minh bạch và cá nhân hóa cho người dùng. Gear-Shop phục vụ đa dạng đối tượng khách hàng từ cá nhân, sinh viên, game thủ đến doanh nghiệp, kỹ thuật viên IT. Các chức năng chính của hệ thống bao gồm tìm kiếm, xem chi tiết sản phẩm, đặt hàng, thanh toán trực tuyến, quản lý đơn hàng, quản lý tài khoản, nhận thông báo khuyến mãi, hỗ trợ khách hàng.
+
+Về công nghệ, Gear-Shop sử dụng Next.js (React) và Tailwind CSS cho frontend, đảm bảo giao diện responsive tối ưu cho mọi thiết bị. Backend được xây dựng bằng Node.js với Express, cung cấp các API RESTful phục vụ frontend. Dữ liệu được lưu trữ trong MySQL, đảm bảo tính nhất quán, an toàn và dễ mở rộng. Hệ thống sử dụng JWT để xác thực và phân quyền người dùng, tích hợp VNPay cho thanh toán trực tuyến, ứng dụng các thuật toán AI đơn giản để gợi ý sản phẩm, phân tích hành vi người dùng. Ngoài ra, hệ thống còn tích hợp email xác thực, thông báo đẩy, tối ưu SEO, hỗ trợ vận hành hiệu quả cho cả người dùng và người quản trị.
+
+Kiến trúc hệ thống được thiết kế theo mô hình client-server, frontend giao tiếp backend qua API RESTful, backend xử lý logic nghiệp vụ, xác thực, quản lý dữ liệu, gửi email, tích hợp thanh toán. Database MySQL lưu trữ dữ liệu có cấu trúc, bảo mật JWT, phân quyền truy cập API, tích hợp AI gợi ý sản phẩm. Hệ thống có khả năng mở rộng, dễ bảo trì, triển khai trên các nền tảng cloud, đáp ứng nhu cầu phát triển lâu dài.
+
+1.5. Khảo sát hiện trạng thị trường và các hệ thống tương tự (5-7 trang)
+Thị trường linh kiện điện tử, máy tính tại Việt Nam phát triển mạnh mẽ trong những năm gần đây. Sự bùng nổ của game online, nhu cầu học tập, làm việc từ xa, giải trí số đã thúc đẩy nhu cầu lắp ráp, nâng cấp PC, mua gaming gear, thiết bị ngoại vi. Các sàn thương mại điện tử lớn như Shopee, Lazada cũng tham gia phân phối linh kiện, nhưng các website chuyên biệt như Phong Vũ, GearVN, An Phát Computer vẫn giữ vai trò chủ đạo nhờ uy tín, dịch vụ chuyên sâu và sự am hiểu thị trường.
+
+Phong Vũ là thương hiệu lâu đời, có hệ thống showroom phủ rộng khắp các thành phố lớn, cung cấp đa dạng sản phẩm, chú trọng dịch vụ hậu mãi, bảo hành và hỗ trợ khách hàng. Giao diện website chuyên nghiệp, nhiều danh mục, tích hợp các tính năng tìm kiếm nâng cao, so sánh sản phẩm, đánh giá, bình luận. Tuy nhiên, giao diện đôi khi phức tạp, tốc độ tải trang chưa tối ưu, trải nghiệm cá nhân hóa còn hạn chế, giá thành sản phẩm ở mức trung bình đến cao.
+
+GearVN nổi bật trong cộng đồng game thủ, tập trung vào các sản phẩm gaming gear, linh kiện cao cấp, máy tính custom. Website hiện đại, trẻ trung, nhiều hình ảnh minh họa, video review, tích hợp blog tư vấn, hướng dẫn chọn linh kiện. Dịch vụ khách hàng tốt, chính sách bảo hành rõ ràng, hỗ trợ nhanh chóng, giao hàng nhanh tại các thành phố lớn. Tuy nhiên, giá thành sản phẩm cao hơn mặt bằng chung, số lượng chương trình trả góp còn hạn chế, phạm vi giao hàng chủ yếu ở các đô thị lớn.
+
+An Phát Computer là hệ thống bán lẻ lớn tại miền Bắc, nhiều showroom tại Hà Nội, TP.HCM, đa dạng sản phẩm, nhiều phân khúc giá, dịch vụ khách hàng tốt, nhiều chương trình khuyến mãi, hỗ trợ doanh nghiệp. Giao diện website đầy đủ danh mục, tích hợp tìm kiếm, lọc sản phẩm, so sánh, đánh giá. Tuy nhiên, giao diện web còn truyền thống, chưa tối ưu cho thiết bị di động, tốc độ phản hồi chưa đồng đều.
+
+So với các hệ thống trên, Gear-Shop hướng đến sự tối giản, hiện đại, tối ưu tốc độ tải trang, trải nghiệm cá nhân hóa, tích hợp AI gợi ý sản phẩm, hỗ trợ khách hàng 24/7, tối ưu cho thiết bị di động. Gear-Shop tập trung vào nhóm khách hàng trẻ, game thủ, sinh viên, người dùng công nghệ, đồng thời học hỏi sự đa dạng sản phẩm, dịch vụ hậu mãi của Phong Vũ, chính sách bảo hành rõ ràng của GearVN và sự linh hoạt về giá của An Phát. Điểm khác biệt lớn nhất của Gear-Shop là ứng dụng công nghệ hiện đại, tối ưu trải nghiệm người dùng và khả năng mở rộng, tích hợp các dịch vụ mới trong tương lai.
+
+1.6. Mục tiêu và phạm vi của hệ thống (3-5 trang)
+Mục tiêu của hệ thống Gear-Shop là xây dựng một website thương mại điện tử chuyên cung cấp linh kiện máy tính, đáp ứng nhu cầu mua sắm ngày càng cao của người tiêu dùng trong thời đại công nghệ số. Hệ thống hỗ trợ người dùng tiếp cận thông tin sản phẩm nhanh chóng, dễ dàng, cung cấp quy trình đặt hàng và thanh toán thuận tiện, chuyên nghiệp. Các mục tiêu cụ thể bao gồm:
+- Xây dựng website có giao diện trực quan, dễ sử dụng, thân thiện với người dùng trên cả nền tảng máy tính và thiết bị di động.
+- Phát triển hệ thống quản lý sản phẩm hiệu quả, cho phép thêm, sửa, xoá linh kiện máy tính và thông tin chi tiết của từng sản phẩm một cách linh hoạt.
+- Hỗ trợ tính năng tìm kiếm, lọc sản phẩm theo danh mục, giá, thương hiệu... giúp người dùng dễ dàng lựa chọn sản phẩm phù hợp.
+- Thiết kế quy trình đặt hàng, theo dõi đơn hàng và thanh toán đơn giản, rõ ràng, thuận tiện cho người dùng.
+- Cung cấp các công cụ quản trị dành cho người quản lý: quản lý khách hàng, đơn hàng, kiểm soát hàng tồn kho, xuất nhập kho, thống kê doanh thu.
+- Tích hợp các công nghệ hiện đại, trong đó có AI, nhằm hỗ trợ tối ưu hóa trải nghiệm người dùng, nâng cao hiệu quả tìm kiếm, gợi ý sản phẩm và hỗ trợ dịch vụ khách hàng.
+- Đảm bảo website có khả năng vận hành ổn định, dễ bảo trì, có khả năng mở rộng và triển khai trên môi trường thực tế.
+
+Phạm vi nghiên cứu của hệ thống tập trung vào việc thiết kế và xây dựng website thương mại điện tử với giao diện hiện đại, thân thiện, dễ sử dụng; xây dựng hệ thống cơ sở dữ liệu sử dụng MySQL để lưu trữ thông tin sản phẩm, đơn hàng, người dùng và các dữ liệu liên quan; phát triển toàn bộ hệ thống (cả frontend và backend) sử dụng Next.js, đảm bảo khả năng hiển thị tốt, hỗ trợ SEO, đồng thời xử lý logic nghiệp vụ và kết nối dữ liệu thông qua các API. Hệ thống tập trung vào các chức năng quản lý sản phẩm, quản lý đơn hàng, quản lý người dùng, hỗ trợ giao hàng và trải nghiệm mua sắm cho khách hàng, ứng dụng trí tuệ nhân tạo vào một số tính năng nhằm nâng cao trải nghiệm người dùng.
+
+Giới hạn phạm vi: Đồ án chỉ tập trung vào hệ thống web, chưa triển khai ứng dụng di động riêng; hệ thống AI ở mức cơ bản, nhằm cải thiện trải nghiệm người dùng, chưa triển khai AI nâng cao như chatbot hội thoại phức tạp; website phát triển mô phỏng môi trường thực tế, phục vụ mục tiêu học tập và thử nghiệm, chưa triển khai vận hành thương mại thực tế.
+
+Đối tượng nghiên cứu bao gồm khách hàng (người dùng có nhu cầu tìm hiểu, tham khảo và mua sắm linh kiện máy tính thông qua website), quản trị viên (người quản lý, kiểm soát sản phẩm, khách hàng, đơn hàng, kho hàng và bài viết trên hệ thống), nhân viên giao hàng (người tiếp nhận thông tin vận chuyển, cập nhật trạng thái đơn hàng và xác nhận giao hàng cho khách), hệ thống website (cấu trúc cơ sở dữ liệu, giao diện người dùng và quy trình xử lý nghiệp vụ thương mại điện tử).
+
+1.7. Kết luận chương 1
+Chương 1 đã trình bày tổng quan về bài toán, khảo sát hiện trạng thị trường và các hệ thống tương tự, phân tích ưu nhược điểm, lý do chọn đề tài, giới thiệu hệ thống Gear-Shop, mục tiêu và phạm vi nghiên cứu. Những nội dung này là nền tảng quan trọng cho các chương tiếp theo về phân tích, thiết kế, xây dựng và triển khai hệ thống. Để đảm bảo đủ số trang, bạn hãy bổ sung hình ảnh, biểu đồ, sơ đồ minh họa vào các vị trí phù hợp trong báo cáo.
+
+### 3.2.8. Triển khai hệ thống: Vercel và Railway
+
+**Vercel:**
+Vercel là nền tảng cloud chuyên dụng cho việc triển khai các ứng dụng web hiện đại, đặc biệt tối ưu cho các dự án sử dụng Next.js. Gear-Shop sử dụng Vercel để deploy frontend (Next.js), tận dụng các ưu điểm như tự động build, tự động scale, CDN toàn cầu giúp tăng tốc độ tải trang, hỗ trợ custom domain, HTTPS miễn phí và tích hợp CI/CD với GitHub. Việc triển khai trên Vercel giúp quá trình cập nhật, bảo trì giao diện trở nên nhanh chóng, an toàn, không cần quản lý server vật lý.
+
+**Railway:**
+Railway là nền tảng cloud hỗ trợ triển khai backend và cơ sở dữ liệu một cách đơn giản, linh hoạt. Gear-Shop sử dụng Railway để deploy backend Node.js/Express và cơ sở dữ liệu MySQL. Railway cung cấp giao diện quản lý trực quan, tự động hóa quá trình build, deploy, backup database, dễ dàng mở rộng tài nguyên khi cần thiết. Railway còn hỗ trợ tích hợp biến môi trường, log, giám sát hiệu năng, giúp đảm bảo hệ thống backend và database luôn hoạt động ổn định, bảo mật.
+
+**Tích hợp Vercel và Railway:**
+- Frontend (Next.js) được deploy trên Vercel, backend (Node.js/Express) và MySQL được deploy trên Railway.
+- Hai nền tảng này kết nối qua các endpoint API bảo mật, đảm bảo hiệu năng và độ tin cậy cao.
+- Quy trình CI/CD tự động: mỗi lần cập nhật code trên GitHub, hệ thống sẽ tự động build và deploy phiên bản mới lên Vercel/Railway.
+
+Việc sử dụng Vercel và Railway giúp Gear-Shop dễ dàng mở rộng quy mô, tiết kiệm chi phí vận hành, đảm bảo hệ thống luôn sẵn sàng phục vụ người dùng với hiệu năng tối ưu và bảo mật cao. 

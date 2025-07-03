@@ -1,0 +1,172 @@
+@startuml
+' =========================
+' CORE ENTITIES
+' =========================
+class User {
+  +user_id: Long
+  +full_name: String
+  +email: String
+  +password_hash: String
+  +phone_number: String
+  +address: String
+  +role: String
+  +is_active: Boolean
+  +last_login: Date
+  +created_at: Date
+  +updated_at: Date
+  +reset_password_token: String
+  +reset_password_expires: Date
+}
+
+class Product {
+  +product_id: Long
+  +product_name: String
+  +product_code: String
+  +brand_id: Long
+  +category_id: Long
+  +price: Double
+  +original_price: Double
+  +stock_quantity: Int
+  +is_active: Boolean
+  +created_at: Date
+  +updated_at: Date
+}
+
+class Category {
+  +category_id: Long
+  +category_name: String
+  +category_code: String
+  +parent_id: Long
+  +is_active: Boolean
+  +created_at: Date
+  +updated_at: Date
+}
+
+class Brand {
+  +brand_id: Long
+  +brand_name: String
+  +brand_code: String
+  +logo_code: String
+  +website: String
+}
+
+class Order {
+  +id: Long
+  +user_id: Long
+  +total_amount: Double
+  +status: String
+  +shipping_address: String
+  +phone_number: String
+  +payment_method: String
+  +created_at: Date
+  +updated_at: Date
+}
+
+' =========================
+' RELATED ENTITIES
+' =========================
+class OrderItem {
+  +id: Long
+  +order_id: Long
+  +product_id: Long
+  +quantity: Int
+  +price: Double
+  +created_at: Date
+}
+
+class ProductImage {
+  +image_id: Long
+  +product_id: Long
+  +image_name: String
+  +image_code: String
+  +is_primary: Boolean
+  +display_order: Int
+  +created_at: Date
+  +updated_at: Date
+}
+
+class ProductSpecification {
+  +spec_id: Long
+  +product_id: Long
+  +spec_name: String
+  +spec_value: String
+  +display_order: Int
+  +created_at: Date
+  +updated_at: Date
+}
+
+class Notification {
+  +notification_id: Long
+  +user_id: Long
+  +title: String
+  +message: String
+  +type: String
+  +category: String
+  +data: String
+  +is_read: Boolean
+  +created_at: Date
+  +updated_at: Date
+}
+
+class NotificationSettings {
+  +setting_id: Long
+  +user_id: Long
+  +email_notifications: Boolean
+  +push_notifications: Boolean
+  +order_updates: Boolean
+  +promotions: Boolean
+  +new_products: Boolean
+  +created_at: Date
+  +updated_at: Date
+}
+
+' =========================
+' PC BUILDER
+' =========================
+class PCBuild {
+  +build_id: Long
+  +build_name: String
+  +user_id: Long
+  +total_price: Double
+  +estimated_power: Int
+  +created_at: Date
+  +updated_at: Date
+}
+
+class PCComponent {
+  +component_type: String
+  +product_id: Long
+  +product_name: String
+  +product_code: String
+  +brand_name: String
+  +price: Double
+  +stock_quantity: Int
+  +primary_image: String
+}
+
+' =========================
+' RELATIONSHIPS
+' =========================
+User "1" -- "0..*" Order : places
+User "1" -- "0..*" Notification : receives
+User "1" -- "1" NotificationSettings : has
+User "1" -- "0..*" PCBuild : creates
+
+Order "1" -- "1..*" OrderItem : contains
+OrderItem "1" -- "1" Product : refers
+
+Product "1" -- "0..*" ProductImage : has
+Product "1" -- "0..*" ProductSpecification : has
+Product "1" -- "0..*" OrderItem : appears_in
+Product "1" -- "1" Brand : belongs_to
+Product "1" -- "1" Category : belongs_to
+
+Category "1" -- "0..*" Product : contains
+Category "1" -- "0..*" Category : subcategory
+
+Brand "1" -- "0..*" Product : manufactures
+
+PCBuild "1" -- "0..*" PCComponent : includes
+PCBuild "1" -- "1" User : owner
+
+@enduml 
