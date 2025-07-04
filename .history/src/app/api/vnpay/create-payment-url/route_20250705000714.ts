@@ -4,7 +4,7 @@ import crypto from "crypto";
 // Cấu hình VNPay cho production
 const VNPAY_TMN_CODE = process.env.VNPAY_TMN_CODE;
 const VNPAY_HASH_SECRET = process.env.VNPAY_SECRET_KEY;
-const VNPAY_URL = process.env.NODE_ENV === "production"
+const VNPAY_URL = process.env.NODgitE_ENV === "production"
   ? "https://vnpayment.vn/paymentv2/vpcpay.html"
   : "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 const VNPAY_RETURN_URL = process.env.NODE_ENV === "production"
