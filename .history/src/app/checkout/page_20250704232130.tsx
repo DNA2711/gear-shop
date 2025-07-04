@@ -246,7 +246,7 @@ export default function CheckoutPage() {
         // Tạo URL thanh toán VNPAY
         const paymentData = {
           orderId: result.orderId,
-          amount: Math.round(totalAmount),
+          amount: totalAmount,
           orderInfo: `Thanh toan don hang #${result.orderId}`,
         };
         console.log("Payment data being sent to VNPAY:", paymentData);
@@ -262,8 +262,7 @@ export default function CheckoutPage() {
         if (!paymentResponse.ok) {
           const errorData = await paymentResponse.json();
           console.error("VNPAY API error:", errorData);
-          toast.error(errorData.error || "Có lỗi xảy ra khi tạo URL thanh toán");
-          throw new Error(errorData.error || "Failed to create payment URL");
+          throw new Error(`Failed to create payment URL: ${JSON.stringify(errorData)}`);
         }
 
         const paymentResult = await paymentResponse.json();

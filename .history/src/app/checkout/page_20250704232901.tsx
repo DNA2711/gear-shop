@@ -246,7 +246,7 @@ export default function CheckoutPage() {
         // Tạo URL thanh toán VNPAY
         const paymentData = {
           orderId: result.orderId,
-          amount: Math.round(totalAmount),
+          amount: totalAmount,
           orderInfo: `Thanh toan don hang #${result.orderId}`,
         };
         console.log("Payment data being sent to VNPAY:", paymentData);

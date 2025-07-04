@@ -244,30 +244,23 @@ export default function CheckoutPage() {
       // Handle different payment methods
       if (paymentMethod === "vnpay") {
         // Tạo URL thanh toán VNPAY
-        const paymentData = {
-          orderId: result.orderId,
-          amount: Math.round(totalAmount),
-          orderInfo: `Thanh toan don hang #${result.orderId}`,
-        };
-        console.log("Payment data being sent to VNPAY:", paymentData);
-
         const paymentResponse = await fetch("/api/vnpay/create-payment-url", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(paymentData),
+          body: JSON.stringify({
+            orderId: result.orderId,
+            amount: totalAmount,
+            orderInfo: `Thanh toan don hang #${result.orderId}`,
+          }),
         });
 
         if (!paymentResponse.ok) {
-          const errorData = await paymentResponse.json();
-          console.error("VNPAY API error:", errorData);
-          toast.error(errorData.error || "Có lỗi xảy ra khi tạo URL thanh toán");
-          throw new Error(errorData.error || "Failed to create payment URL");
+          throw new Error("Failed to create payment URL");
         }
 
         const paymentResult = await paymentResponse.json();
-        console.log("VNPAY API response:", paymentResult);
         
         if (paymentResult.success && paymentResult.paymentUrl) {
           // Chuyển hướng đến trang thanh toán VNPAY
