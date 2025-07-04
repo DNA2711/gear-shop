@@ -22,7 +22,6 @@ interface VNPayParams {
   vnp_ReturnUrl: string;
   vnp_IpAddr: string;
   vnp_CreateDate: string;
-  vnp_BankCode?: string;
   vnp_SecureHash?: string;
   [key: string]: string | number | undefined;
 }
@@ -74,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Kiểm tra giới hạn số tiền theo yêu cầu của VNPAY
-    if (numAmount < 1000 || numAmount >= 1000000000) {
+    if (numAmount < 5000 || numAmount >= 1000000000) {
       console.error("Invalid amount range:", {
         originalAmount: amount,
         numAmount,
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 1,000 đến dưới 1 tỷ đồng",
+            "Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 5,000 đến dưới 1 tỷ đồng",
         },
         { status: 400 }
       );
@@ -98,20 +97,18 @@ export async function POST(request: NextRequest) {
       String(now.getMinutes()).padStart(2, "0") +
       String(now.getSeconds()).padStart(2, "0");
 
-    // Get client IP
-    const clientIp = request.headers.get("x-forwarded-for") || 
-                    request.headers.get("x-real-ip") || 
-                    "127.0.0.1";
+    // Format mã đơn hàng: GS + TIMESTAMP
+    const formattedOrderId = `GS${createDate}`;
 
     console.log("Payment details:", {
       originalAmount: amount,
       numAmount: numAmount,
+      amountToVNPay: numAmount * 100,
       formattedAmount: new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
       }).format(numAmount),
-      clientIp,
-      createDate,
+      formattedOrderId,
     });
 
     // Tạo các tham số thanh toán
@@ -125,12 +122,12 @@ export async function POST(request: NextRequest) {
       vnp_TmnCode: tmnCode,
       vnp_Locale: "vn",
       vnp_CurrCode: "VND",
-      vnp_TxnRef: orderId.toString(),
-      vnp_OrderInfo: orderInfo,
+      vnp_TxnRef: formattedOrderId,
+      vnp_OrderInfo: encodeURIComponent(orderInfo),
       vnp_OrderType: "other",
-      vnp_Amount: numAmount,
+      vnp_Amount: numAmount * 100,
       vnp_ReturnUrl: returnUrl,
-      vnp_IpAddr: clientIp,
+      vnp_IpAddr: "127.0.0.1",
       vnp_CreateDate: createDate,
     };
 
@@ -151,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     // Tạo URL thanh toán với encode
     const paymentUrl = `${VNPAY_URL}?${Object.keys(vnpParams)
-      .map((key) => `${key}=${encodeURIComponent(String(vnpParams[key]))}`)
+      .map((key) => `${key}=${encodeURIComponent(vnpParams[key] as string)}`)
       .join("&")}`;
 
     console.log("Generated payment URL:", paymentUrl);
@@ -159,7 +156,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       paymentUrl,
-      orderId,
+      orderId: formattedOrderId,
     });
   } catch (error: any) {
     console.error("Error creating payment URL:", error);
