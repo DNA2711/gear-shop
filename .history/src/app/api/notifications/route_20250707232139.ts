@@ -1,0 +1,83 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import {
+  CreateNotificationRequest,
+  Notification,
+  NotificationResponse,
+} from "@/types/notification";
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
+
+    const response: NotificationResponse = {
+      notifications: [],
+            stats: {  
+        total: 0,
+        unread: 0,
+        recent: 0,
+      },
+      pagination: {
+        page,
+        limit,
+        total: 0,
+        hasMore: false,
+      },
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching notifications:", error);
+    } else {
+      console.error("Error fetching notifications:", (error as any).message);
+    }
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+
+    const body: CreateNotificationRequest = await request.json();
+    const { user_id, title, message, type, category, data } = body;
+
+    if (!user_id || !title || !message || !type || !category) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const insertQuery = `
+      INSERT INTO notifications (user_id, title, message, type, category, data)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    const insertId = await db.insert(insertQuery, [
+      user_id,
+      title,
+      message,
+      type,
+      category,
+      data ? JSON.stringify(data) : null,
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      message: "Notification created successfully",
+      notification_id: insertId,
+    });
+  } catch (error) {
+        console.error("Error creating notification:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

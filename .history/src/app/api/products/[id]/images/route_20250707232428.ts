@@ -1,0 +1,120 @@
+import { NextRequest, NextResponse } from "next/server";
+import { dbHelpers as ProductService } from "@/lib/database";
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const productId = parseInt(id);
+
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { error: "Invalid product ID" },
+        { status: 400 }
+      );
+    }
+
+    const images = await ProductService.getProductImages(productId);
+    return NextResponse.json(images);
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching product images:", error);
+    } else {
+      console.error("Error fetching product images:", (error as any).message);
+    }
+    return NextResponse.json(
+      { error: "Failed to fetch images" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const productId = parseInt(id);
+
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { error: "Invalid product ID" },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const {
+      image_code,
+      image_name,
+      is_primary = false,
+      display_order = 0,
+    } = body;
+
+    if (!image_code) {
+      return NextResponse.json(
+        { error: "Image code is required" },
+        { status: 400 }
+      );
+    }
+
+    const result = await ProductService.addProductImage({
+      product_id: productId,
+      image_code,
+      image_name: image_name || image_code,
+      is_primary,
+      display_order,
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: result,
+      message: "Image added successfully",
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error adding product image:", error);
+    } else {
+      console.error("Error adding product image:", (error as any).message);
+    }
+    return NextResponse.json({ error: "Failed to add image" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const productId = parseInt(id);
+
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { error: "Invalid product ID" },
+        { status: 400 }
+      );
+    }
+
+    const result = await ProductService.deleteAllProductImages(productId);
+
+    return NextResponse.json({
+      success: true,
+      message: "All images deleted successfully",
+      deleted_count: result,
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+        console.error("Error deleting product images:", error);
+    } else {
+      console.error("Error deleting product images:", (error as any).message);
+    }
+    return NextResponse.json(
+      { error: "Failed to delete images" },
+      { status: 500 }
+    );
+  }
+}
