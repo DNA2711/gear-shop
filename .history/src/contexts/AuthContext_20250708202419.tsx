@@ -51,21 +51,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loadUserFromStorage();
   }, []);
 
-  // Load user data from storage using TokenManager
+  // Load user data from localStorage
   const loadUserFromStorage = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("accessToken");
 
-      if (!tokenManager.isAuthenticated()) {
-        // Try to refresh token if available
-        const refreshSuccess = await tokenManager.refreshTokens();
-        if (!refreshSuccess) {
-          setLoading(false);
-          return;
-        }
-      }
-
-      const token = tokenManager.getAccessToken();
       if (!token) {
         setLoading(false);
         return;
@@ -95,7 +86,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Clear authentication storage
   const clearAuthStorage = () => {
-    tokenManager.clearTokens();
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    // Clear cookie
+    document.cookie = `accessToken=; path=/; max-age=0`;
     setUser(null);
   };
 
@@ -118,13 +112,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.ok) {
         const loginData: LoginResponse = await response.json();
 
-        // Store tokens using TokenManager
-        const tokenData: TokenData = {
-          accessToken: loginData.accessToken,
-          refreshToken: loginData.refreshToken,
-          expiresIn: loginData.expiresIn,
-        };
-        tokenManager.setTokens(tokenData);
+        // Store tokens
+        localStorage.setItem("accessToken", loginData.accessToken);
+        localStorage.setItem("refreshToken", loginData.refreshToken);
+
+        // Also set token in cookie for middleware access
+        document.cookie = `accessToken=${loginData.accessToken}; path=/; max-age=3600; SameSite=strict`;
 
         // Load complete user profile ngay lập tức
         const userResponse = await fetch("/api/auth/me", {
@@ -216,16 +209,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Refresh token function
   const refreshToken = async (): Promise<boolean> => {
     try {
-      const success = await tokenManager.refreshTokens();
+      const token = localStorage.getItem("refreshToken");
 
-      if (!success) {
+      if (!token) {
         logout();
         return false;
       }
 
-      // Reload user profile after successful token refresh
-      await loadUserFromStorage();
-      return true;
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const tokenData: LoginResponse = await response.json();
+
+        // Update tokens
+        localStorage.setItem("accessToken", tokenData.accessToken);
+        localStorage.setItem("refreshToken", tokenData.refreshToken);
+
+        return true;
+      } else {
+        logout();
+        return false;
+      }
     } catch (error) {
       console.error("Token refresh error:", error);
       logout();

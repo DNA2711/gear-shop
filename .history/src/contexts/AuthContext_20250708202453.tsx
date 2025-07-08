@@ -122,7 +122,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const tokenData: TokenData = {
           accessToken: loginData.accessToken,
           refreshToken: loginData.refreshToken,
-          expiresIn: loginData.expiresIn,
+          expiresIn: loginData.expiresIn
         };
         tokenManager.setTokens(tokenData);
 
@@ -216,16 +216,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Refresh token function
   const refreshToken = async (): Promise<boolean> => {
     try {
-      const success = await tokenManager.refreshTokens();
+      const token = localStorage.getItem("refreshToken");
 
-      if (!success) {
+      if (!token) {
         logout();
         return false;
       }
 
-      // Reload user profile after successful token refresh
-      await loadUserFromStorage();
-      return true;
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const tokenData: LoginResponse = await response.json();
+
+        // Update tokens
+        localStorage.setItem("accessToken", tokenData.accessToken);
+        localStorage.setItem("refreshToken", tokenData.refreshToken);
+
+        return true;
+      } else {
+        logout();
+        return false;
+      }
     } catch (error) {
       console.error("Token refresh error:", error);
       logout();

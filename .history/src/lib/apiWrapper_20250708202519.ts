@@ -27,12 +27,13 @@ export const apiCall = async (
     ...restOptions
   } = options;
 
-  // Get token using TokenManager
-  const authHeaders = tokenManager.getAuthorizationHeader();
+  const token =
+    safeLocalStorage.getItem("accessToken") ||
+    safeLocalStorage.getItem("token");
 
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
-    ...authHeaders,
+    ...(token && { Authorization: `Bearer ${token}` }),
     ...headers,
   };
 
@@ -55,30 +56,14 @@ export const apiCall = async (
 };
 
 /**
- * Wrapper cho fetch với automatic JSON parsing, error handling và token refresh
- * 
+ * Wrapper cho fetch với automatic JSON parsing và error handling
+ *
  */
 export const apiRequest = async <T = any>(
   url: string,
   options: ApiOptions = {}
 ): Promise<T> => {
-  let response = await apiCall(url, options);
-
-  // If token expired, try to refresh and retry once
-  if (response.status === 401 && !url.includes('/auth/')) {
-    const refreshSuccess = await tokenManager.refreshTokens();
-    
-    if (refreshSuccess) {
-      // Retry with new token
-      response = await apiCall(url, options);
-    } else {
-      // Refresh failed, redirect to login or clear auth state
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
-      throw new Error('Session expired. Please login again.');
-    }
-  }
+  const response = await apiCall(url, options);
 
   if (!response.ok) {
     const errorText = await response.text();

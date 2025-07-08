@@ -217,7 +217,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const refreshToken = async (): Promise<boolean> => {
     try {
       const success = await tokenManager.refreshTokens();
-
+      
       if (!success) {
         logout();
         return false;

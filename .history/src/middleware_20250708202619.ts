@@ -53,17 +53,13 @@ export async function middleware(request: NextRequest) {
       if (!pathname.startsWith("/api/")) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
-        if (tokenExpired) {
-          loginUrl.searchParams.set("expired", "true");
-        }
         return NextResponse.redirect(loginUrl);
       }
 
       return NextResponse.json(
         {
           status: 401,
-          message: tokenExpired ? "Token đã hết hạn" : "Token không hợp lệ hoặc đã hết hạn",
-          expired: tokenExpired,
+          message: "Token không hợp lệ hoặc đã hết hạn",
         },
         { status: 401 }
       );
