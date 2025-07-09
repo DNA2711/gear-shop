@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtService } from "@/lib/jwt";
+import { TOKEN_KEYS } from "@/lib/constants";
 
 const protectedRoutes = [
   "/dashboard",
@@ -24,17 +25,16 @@ export async function middleware(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
   let token = authHeader?.startsWith("Bearer ")
     ? authHeader.substring(7)
-    : request.cookies.get("auth-token")?.value;
+    : null;
 
+  // Try to get token from cookies using standardized key
   if (!token) {
-    const accessTokenCookie = request.cookies.get("accessToken")?.value;
-    if (accessTokenCookie) {
-      token = accessTokenCookie;
-    }
+    token = request.cookies.get(TOKEN_KEYS.ACCESS_TOKEN)?.value || null;
   }
 
   let isAuthenticated = false;
   let userRole = "";
+  let tokenExpired = false;
 
   if (token) {
     try {
@@ -43,6 +43,9 @@ export async function middleware(request: NextRequest) {
       userRole = payload.roles?.[0] || "USER";
     } catch (error) {
       isAuthenticated = false;
+      // Check if token is expired (for potential refresh)
+      tokenExpired =
+        error instanceof Error && error.message.includes("expired");
     }
   }
 
@@ -51,13 +54,19 @@ export async function middleware(request: NextRequest) {
       if (!pathname.startsWith("/api/")) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
+        if (tokenExpired) {
+          loginUrl.searchParams.set("expired", "true");
+        }
         return NextResponse.redirect(loginUrl);
       }
 
       return NextResponse.json(
         {
           status: 401,
-          message: "Token không hợp lệ hoặc đã hết hạn",
+          message: tokenExpired
+            ? "Token đã hết hạn"
+            : "Token không hợp lệ hoặc đã hết hạn",
+          expired: tokenExpired,
         },
         { status: 401 }
       );

@@ -19,7 +19,6 @@ export function useEnhancedApi() {
     userInfo: null,
   });
 
-  // Check authentication status and token validity
   const checkAuthStatus = () => {
     const isAuth = tokenManager.isAuthenticated();
     const userInfo = tokenManager.getUserFromToken();
@@ -35,46 +34,40 @@ export function useEnhancedApi() {
     return { isAuth, expired, userInfo };
   };
 
-  // Initialize auth status
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  // Enhanced API call with pre-flight token validation
   const secureApiCall = async <T = any>(
-    method: 'get' | 'post' | 'put' | 'patch' | 'delete',
+    method: "get" | "post" | "put" | "patch" | "delete",
     url: string,
     data?: any,
     options?: any
   ): Promise<T> => {
-    // Pre-flight check
     const { isAuth, expired } = checkAuthStatus();
-    
-    if (!isAuth && !url.includes('/auth/')) {
-      throw new Error('Not authenticated. Please login first.');
+
+    if (!isAuth && !url.includes("/auth/")) {
+      throw new Error("Not authenticated. Please login first.");
     }
 
-    if (expired && !url.includes('/auth/')) {
-      // Try to refresh token before making the call
+    if (expired && !url.includes("/auth/")) {
       const refreshSuccess = await tokenManager.refreshTokens();
       if (!refreshSuccess) {
-        throw new Error('Session expired. Please login again.');
+        throw new Error("Session expired. Please login again.");
       }
-      // Update auth status after refresh
       checkAuthStatus();
     }
 
-    // Make the API call using existing api wrapper
     switch (method) {
-      case 'get':
+      case "get":
         return api.get<T>(url, options);
-      case 'post':
+      case "post":
         return api.post<T>(url, data, options);
-      case 'put':
+      case "put":
         return api.put<T>(url, data, options);
-      case 'patch':
+      case "patch":
         return api.patch<T>(url, data, options);
-      case 'delete':
+      case "delete":
         return api.delete<T>(url, options);
       default:
         throw new Error(`Unsupported method: ${method}`);
@@ -82,20 +75,22 @@ export function useEnhancedApi() {
   };
 
   return {
-    // Enhanced API methods
-    get: <T = any>(url: string, options?: any) => secureApiCall<T>('get', url, undefined, options),
-    post: <T = any>(url: string, data?: any, options?: any) => secureApiCall<T>('post', url, data, options),
-    put: <T = any>(url: string, data?: any, options?: any) => secureApiCall<T>('put', url, data, options),
-    patch: <T = any>(url: string, data?: any, options?: any) => secureApiCall<T>('patch', url, data, options),
-    delete: <T = any>(url: string, options?: any) => secureApiCall<T>('delete', url, undefined, options),
-    
-    // State and utilities
+    get: <T = any>(url: string, options?: any) =>
+      secureApiCall<T>("get", url, undefined, options),
+    post: <T = any>(url: string, data?: any, options?: any) =>
+      secureApiCall<T>("post", url, data, options),
+    put: <T = any>(url: string, data?: any, options?: any) =>
+      secureApiCall<T>("put", url, data, options),
+    patch: <T = any>(url: string, data?: any, options?: any) =>
+      secureApiCall<T>("patch", url, data, options),
+    delete: <T = any>(url: string, options?: any) =>
+      secureApiCall<T>("delete", url, undefined, options),
+
     ...apiState,
     checkAuthStatus,
     refreshTokens: tokenManager.refreshTokens,
     clearTokens: tokenManager.clearTokens,
-    
-    // Original api for backward compatibility
+
     api,
   };
-} 
+}

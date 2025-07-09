@@ -1,20 +1,7 @@
 "use client";
 
 import { safeLocalStorage } from "@/config/api";
-
-// Constants for token storage keys
-export const TOKEN_KEYS = {
-  ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
-} as const;
-
-// Cookie settings
-const COOKIE_OPTIONS = {
-  ACCESS_TOKEN_MAX_AGE: 3600, // 1 hour
-  REFRESH_TOKEN_MAX_AGE: 604800, // 7 days
-  SAME_SITE: 'strict' as const,
-  PATH: '/',
-} as const;
+import { TOKEN_KEYS, COOKIE_OPTIONS } from "@/lib/constants";
 
 export interface TokenData {
   accessToken: string;

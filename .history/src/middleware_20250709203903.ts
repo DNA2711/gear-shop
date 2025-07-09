@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtService } from "@/lib/jwt";
+import { TOKEN_KEYS } from "@/lib/constants";
 
 const protectedRoutes = [
   "/dashboard",
@@ -19,45 +20,54 @@ const publicApiRoutes = [
 ];
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  try {
+    const { pathname } = request.nextUrl;
 
-  const authHeader = request.headers.get("Authorization");
-  let token = authHeader?.startsWith("Bearer ")
-    ? authHeader.substring(7)
-    : request.cookies.get("auth-token")?.value;
+    const authHeader = request.headers.get("Authorization");
+    let token = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
 
-  if (!token) {
-    const accessTokenCookie = request.cookies.get("accessToken")?.value;
-    if (accessTokenCookie) {
-      token = accessTokenCookie;
+    // Try to get token from cookies using standardized key
+    if (!token) {
+      token = request.cookies.get(TOKEN_KEYS.ACCESS_TOKEN)?.value || null;
     }
-  }
 
-  let isAuthenticated = false;
-  let userRole = "";
+    let isAuthenticated = false;
+    let userRole = "";
+    let tokenExpired = false;
 
-  if (token) {
-    try {
-      const payload = await jwtService.verifyToken(token);
-      isAuthenticated = true;
-      userRole = payload.roles?.[0] || "USER";
-    } catch (error) {
-      isAuthenticated = false;
+    if (token) {
+      try {
+        const payload = await jwtService.verifyToken(token);
+        isAuthenticated = true;
+        userRole = payload.roles?.[0] || "USER";
+      } catch (error) {
+        isAuthenticated = false;
+        // Check if token is expired (for potential refresh)
+        tokenExpired =
+          error instanceof Error && error.message.includes("expired");
+      }
     }
-  }
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!isAuthenticated) {
       if (!pathname.startsWith("/api/")) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
+        if (tokenExpired) {
+          loginUrl.searchParams.set("expired", "true");
+        }
         return NextResponse.redirect(loginUrl);
       }
 
       return NextResponse.json(
         {
           status: 401,
-          message: "Token không hợp lệ hoặc đã hết hạn",
+          message: tokenExpired
+            ? "Token đã hết hạn"
+            : "Token không hợp lệ hoặc đã hết hạn",
+          expired: tokenExpired,
         },
         { status: 401 }
       );
