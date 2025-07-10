@@ -13,13 +13,20 @@ export async function PUT(request: NextRequest) {
       userId = 8;
     }
 
+    console.log("📝 Mark all read - userId:", userId);
+
     const updateQuery = `
       UPDATE notifications 
       SET is_read = TRUE, updated_at = CURRENT_TIMESTAMP
       WHERE user_id = ? AND is_read = FALSE
     `;
 
+    const result = await db.query(updateQuery, [userId]);
+    console.log("✅ Update result:", result);
+
+    // For UPDATE queries, we need to use the update method to get affectedRows
     const affectedRows = await db.update(updateQuery, [userId]);
+    console.log("📊 Affected rows:", affectedRows);
 
     return NextResponse.json({
       success: true,
@@ -27,7 +34,7 @@ export async function PUT(request: NextRequest) {
       updatedCount: affectedRows,
     });
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    console.error("❌ Error marking all notifications as read:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

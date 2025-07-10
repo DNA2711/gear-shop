@@ -84,7 +84,11 @@ export async function POST(request: NextRequest) {
       notification_id: insertId,
     });
   } catch (error) {
-    console.error("Error creating notification:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error creating notification:", error);
+    } else {
+      console.error("Error creating notification:", (error as any).message);
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

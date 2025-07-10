@@ -74,34 +74,6 @@ export async function GET(request: NextRequest) {
         "UPDATE orders SET status = ?, payment_status = ?, updated_at = NOW() WHERE id = ?",
         ["processing", "paid", orderId]
       );
-
-      try {
-        const orderDetails = await db.queryFirst(
-          "SELECT o.user_id, o.total_amount, u.full_name, COUNT(oi.id) as items_count FROM orders o LEFT JOIN users u ON o.user_id = u.user_id LEFT JOIN order_items oi ON o.id = oi.order_id WHERE o.id = ? GROUP BY o.id",
-          [orderId]
-        );
-
-        if (orderDetails) {
-          await NotificationService.createOrderSuccessNotification(orderDetails.user_id, {
-            orderId: parseInt(orderId),
-            totalAmount: orderDetails.total_amount,
-            itemsCount: orderDetails.items_count,
-          });
-
-          await NotificationService.createNewOrderNotificationForAdmin({
-            orderId: parseInt(orderId),
-            customerName: orderDetails.full_name,
-            customerId: orderDetails.user_id,
-            totalAmount: orderDetails.total_amount,
-            itemsCount: orderDetails.items_count,
-          });
-
-          console.log(`Payment successful! Notifications created for order ${orderId}`);
-        }
-      } catch (notificationError) {
-        console.error("Error creating notifications after payment:", notificationError);
-      }
-
       return NextResponse.redirect(
         new URL(`/checkout/success?orderId=${orderId}`, request.url)
       );
