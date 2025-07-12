@@ -63,7 +63,7 @@ export default function OrdersPage() {
         icon: Truck,
       },
       delivered: {
-        text: "Đang giao hàng",
+        text: "Đã giao hàng",
         color: "bg-green-100 text-green-800 border-green-200",
         icon: Package,
       },
@@ -212,7 +212,7 @@ export default function OrdersPage() {
             },
             {
               key: "delivered",
-              label: "Đang giao hàng",
+              label: "Đa giao hàng",
               count: validOrders.filter((o) => o.status === "delivered").length,
             },
             {
@@ -318,9 +318,7 @@ export default function OrdersPage() {
                           {formatPrice(item.price * item.quantity)}
                         </div>
                       </div>
-                    )) || (
-                      <p className="text-gray-500 text-sm">Không có sản phẩm</p>
-                    )}
+                    )) || <p className="text-gray-500 text-sm">Không có sản phẩm</p>}
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-4 border-t gap-3 sm:gap-0">

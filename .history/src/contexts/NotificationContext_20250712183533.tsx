@@ -164,12 +164,13 @@ export function NotificationProvider({
     }
   }, [user?.id]);
 
+  // Tự động refresh notifications mỗi 30 giây thay vì 60 giây
   useEffect(() => {
     if (!user?.id) return;
 
     const interval = setInterval(() => {
       refreshUnreadCount();
-    }, 30000);  
+    }, 30000); // Giảm từ 60s xuống 30s
 
     return () => clearInterval(interval);
   }, [user?.id, stats.unread]);

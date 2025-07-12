@@ -284,13 +284,13 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Quản lý người dùng</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Quản lý người dun</h1>
         <button
           onClick={() => openModal()}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
         >
           <Plus className="h-4 w-4" />
-          <span>Thêm người dùng</span>
+          <span>Thêm khách hàng</span>
         </button>
       </div>
 

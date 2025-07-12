@@ -52,9 +52,12 @@ export async function PUT(
     });
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
-        console.error("Error marking notification as read:", error);
+      console.error("Error marking notification as read:", error);
     } else {
-      console.error("Error marking notification as read:", (error as any).message);
+      console.error(
+        "Error marking notification as read:",
+        (error as any).message
+      );
     }
     return NextResponse.json(
       { error: "Internal server error" },

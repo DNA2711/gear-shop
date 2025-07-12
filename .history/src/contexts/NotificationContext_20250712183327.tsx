@@ -40,21 +40,13 @@ export function NotificationProvider({
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const getAuthHeaders = (): Record<string, string> => {
-    const token = localStorage.getItem("accessToken");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
   const fetchNotifications = async (page = 1, unreadOnly = false) => {
     if (!user?.id) return;
 
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/notifications?page=${page}&limit=20&unread=${unreadOnly}`,
-        {
-          headers: getAuthHeaders(),
-        }
+        `/api/notifications?page=${page}&limit=20&unread=${unreadOnly}&user_id=${user.id}`
       );
 
       if (response.ok) {
@@ -69,8 +61,6 @@ export function NotificationProvider({
         setStats(data.stats);
         setHasMore(data.pagination?.hasMore || false);
         setCurrentPage(page);
-      } else if (response.status === 401) {
-        console.warn("Unauthorized access to notifications");
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -84,10 +74,9 @@ export function NotificationProvider({
 
     try {
       const response = await fetch(
-        `/api/notifications/${notificationId}/read`,
+        `/api/notifications/${notificationId}/read?user_id=${user.id}`,
         {
           method: "PUT",
-          headers: getAuthHeaders(),
         }
       );
 
@@ -114,10 +103,12 @@ export function NotificationProvider({
     if (!user?.id) return;
 
     try {
-      const response = await fetch(`/api/notifications/mark-all-read`, {
-        method: "PUT",
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `/api/notifications/mark-all-read?user_id=${user.id}`,
+        {
+          method: "PUT",
+        }
+      );
 
       if (response.ok) {
         setNotifications((prev) =>
@@ -138,14 +129,15 @@ export function NotificationProvider({
     if (!user?.id) return;
 
     try {
-      const response = await fetch(`/api/notifications?page=1&limit=1`, {
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `/api/notifications?page=1&limit=1&user_id=${user.id}`
+      );
 
       if (response.ok) {
         const data: NotificationResponse = await response.json();
         setStats(data.stats);
-
+        
+        // Nếu có thông báo mới, fetch lại toàn bộ notifications
         if (data.stats.unread > stats.unread) {
           fetchNotifications(1);
         }
@@ -155,6 +147,7 @@ export function NotificationProvider({
     }
   };
 
+  // Load notifications khi user thay đổi
   useEffect(() => {
     if (user?.id) {
       fetchNotifications();
@@ -164,27 +157,20 @@ export function NotificationProvider({
     }
   }, [user?.id]);
 
+  // Tự động refresh notifications mỗi 30 giây thay vì 60 giây
   useEffect(() => {
     if (!user?.id) return;
 
     const interval = setInterval(() => {
       refreshUnreadCount();
-    }, 30000);  
+    }, 30000); // Giảm từ 60s xuống 30s
 
     return () => clearInterval(interval);
   }, [user?.id, stats.unread]);
 
+  // Thêm event listener để refresh khi tab được focus
   useEffect(() => {
     const handleFocus = () => {
-      if (user?.id) {
-        refreshUnreadCount();
-      }
-    };
-
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [user?.id]);
-
   const contextValue: NotificationContextType = {
     notifications,
     stats,

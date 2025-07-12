@@ -218,7 +218,7 @@ export default function OrdersPage() {
                 <option value="">Tất cả trạng thái</option>
                 <option value="paid">Đã thanh toán</option>
                 <option value="processing">Đang xử lý</option>
-                <option value="shipped">Đang giao</option>
+                <option value="shipped">Đã giao</option>
                 <option value="delivered">Hoàn thành</option>
                 <option value="cancelled">Đã hủy</option>
               </select>

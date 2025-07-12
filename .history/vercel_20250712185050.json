@@ -1,0 +1,25 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/*/route.js": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["sin1"],
+  "env": {
+    "NODE_ENV": "production",
+    "VNPAY_TMN_CODE": "DEMO",
+    "VNPAY_SECRET_KEY": "DEMO_SECRET",
+    "NEXT_PUBLIC_BASE_URL": "https://gear-shop-graduation.vercel.app"
+  },
+  "rewrites": [
+    {
+      "source": "/vnpay/checkout",
+      "destination": "/vnpay/checkout"
+    }
+  ]
+}

@@ -37,14 +37,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <>
-      <div
-        className={`
+      <div className={`
         fixed lg:static inset-y-0 left-0 z-30 w-64 
         bg-gradient-to-b from-gray-900 via-blue-900 to-gray-900 shadow-xl
         transform transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}
-      >
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
         <div className="flex items-center justify-between h-16 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 border-b border-blue-500/30 px-4">
           <Link
             href="/"
@@ -52,15 +50,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           >
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Atom className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-spin-slow group-hover:animate-spin" />
-              <span className="text-white font-light tracking-wider text-base sm:text-lg">
-                Gear
-              </span>
+              <span className="text-white font-light tracking-wider text-base sm:text-lg">Gear</span>
               <span className="bg-gradient-to-r from-blue-400 to-cyan-400 text-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg font-medium tracking-wide transform group-hover:scale-110 transition-transform text-sm">
                 Hub
               </span>
             </div>
           </Link>
-
+          
           <button
             onClick={onClose}
             className="lg:hidden p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -68,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <X className="w-5 h-5" />
           </button>
         </div>
-
+        
         <nav className="mt-4 sm:mt-8 px-2 sm:px-0">
           {navigation.map((item) => {
             const isActive =
@@ -92,18 +88,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 }`}
               >
                 <item.icon
-                  className={`mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${
-                    isActive ? "text-blue-400" : ""
-                  }`}
+                  className={`mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${isActive ? "text-blue-400" : ""}`}
                 />
                 <span className="truncate">{item.name}</span>
               </LoadingLink>
             );
           })}
         </nav>
-
+        
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="text-center text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3"></div>
+          <div className="text-center text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3">
+            <div className="font-semibold text-white mb-1">Admin Panel</div>
+            <div>GearHub v2.0</div>
+          </div>
         </div>
       </div>
     </>

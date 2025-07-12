@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest) {
       "SELECT user_id FROM users WHERE email = ?",
       [payload.username]
     );
-
+    
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

@@ -193,23 +193,17 @@ export function RecentOrders() {
                         className={`inline-flex items-center space-x-1 rounded-full border px-2 sm:px-3 py-1 text-xs font-medium ${statusConfig.color} whitespace-nowrap`}
                       >
                         <span>{statusConfig.icon}</span>
-                        <span className="hidden sm:inline">
-                          {statusConfig.label}
-                        </span>
+                        <span className="hidden sm:inline">{statusConfig.label}</span>
                       </span>
-
+                      
                       <div className="flex items-center space-x-2 sm:space-x-0 sm:flex-col sm:items-end">
                         <div className="flex items-center text-emerald-600 font-semibold text-sm sm:text-base">
                           <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                          <span className="truncate">
-                            {formatCurrency(order.amount)}
-                          </span>
+                          <span className="truncate">{formatCurrency(order.amount)}</span>
                         </div>
                         <div className="flex items-center text-xs sm:text-sm text-gray-500">
                           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                          <span className="whitespace-nowrap">
-                            {order.date}
-                          </span>
+                          <span className="whitespace-nowrap">{order.date}</span>
                         </div>
                       </div>
                     </div>
@@ -218,10 +212,9 @@ export function RecentOrders() {
                   <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                       <p className="text-xs sm:text-sm text-gray-600 truncate">
-                        <span className="font-medium">Sản phẩm:</span>{" "}
-                        {order.products}
+                        <span className="font-medium">Sản phẩm:</span> {order.products}
                       </p>
-
+                      
                       <div className="flex items-center space-x-2">
                         <button className="group/btn inline-flex items-center space-x-1 rounded-lg bg-gray-100 px-2 sm:px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200">
                           <Eye className="h-3 w-3 group-hover/btn:text-blue-600 transition-colors" />
@@ -252,7 +245,7 @@ export function RecentOrders() {
               <div className="text-xs sm:text-sm text-gray-600">
                 Hiển thị {recentOrders.length} đơn hàng gần nhất
               </div>
-
+              
               <button className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 text-xs sm:text-sm font-medium text-white transition-all hover:from-blue-600 hover:to-indigo-600 hover:shadow-lg">
                 <Eye className="h-4 w-4" />
                 <span>Xem tất cả đơn hàng</span>

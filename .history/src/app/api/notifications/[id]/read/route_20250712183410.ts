@@ -24,14 +24,14 @@ export async function PUT(
       "SELECT user_id FROM users WHERE email = ?",
       [payload.username]
     );
-
+    
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const userId = user.user_id;
     const notificationId = parseInt(resolvedParams.id);
-
+    
     if (isNaN(notificationId)) {
       return NextResponse.json(
         { error: "Invalid notification ID" },

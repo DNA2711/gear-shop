@@ -318,9 +318,7 @@ export default function OrdersPage() {
                           {formatPrice(item.price * item.quantity)}
                         </div>
                       </div>
-                    )) || (
-                      <p className="text-gray-500 text-sm">Không có sản phẩm</p>
-                    )}
+                    )) || <p className="text-gray-500 text-sm">Không có sản phẩm</p>}
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-4 border-t gap-3 sm:gap-0">

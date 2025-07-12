@@ -3,6 +3,7 @@ import { db } from "@/lib/database";
 import { jwtService } from "@/lib/jwt";
 import {
   CreateNotificationRequest,
+  Notification,
   NotificationResponse,
 } from "@/types/notification";
 
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
       "SELECT user_id FROM users WHERE email = ?",
       [payload.username]
     );
-
+    
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -33,43 +34,31 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const unreadOnly = searchParams.get("unread") === "true";
 
-    if (
-      isNaN(userId) ||
-      isNaN(page) ||
-      isNaN(limit) ||
-      userId <= 0 ||
-      page <= 0 ||
-      limit <= 0
-    ) {
-      return NextResponse.json(
-        { error: "Invalid parameters" },
-        { status: 400 }
-      );
+    if (isNaN(userId) || isNaN(page) || isNaN(limit) || userId <= 0 || page <= 0 || limit <= 0) {
+      return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
     }
 
     const safeLimit = Math.min(Math.max(1, limit), 100);
     const safePage = Math.max(1, page);
     const safeOffset = (safePage - 1) * safeLimit;
-
     let whereClause = "WHERE user_id = ?";
     if (unreadOnly) {
       whereClause += " AND is_read = FALSE";
     }
 
-    const countResult = await db.query(
-      `SELECT COUNT(*) as total FROM notifications ${whereClause}`,
-      [userId]
-    );
+    const countQuery = `SELECT COUNT(*) as total FROM notifications ${whereClause}`;
+    const countParams = [userId];
+    const countResult = await db.query(countQuery, countParams);
     const total = countResult[0]?.total || 0;
 
     const unreadResult = await db.query(
-      "SELECT COUNT(*) as unread FROM notifications WHERE user_id = ? AND is_read = FALSE",
+      "SELECT COUNT(*) as unread FROM notifications WHERE user_id = ? AND is_read = FALSE", 
       [userId]
     );
     const unread = unreadResult[0]?.unread || 0;
 
     const recentResult = await db.query(
-      "SELECT COUNT(*) as recent FROM notifications WHERE user_id = ? AND DATE(created_at) = CURDATE()",
+      "SELECT COUNT(*) as recent FROM notifications WHERE user_id = ? AND DATE(created_at) = CURDATE()", 
       [userId]
     );
     const recent = recentResult[0]?.recent || 0;
@@ -81,9 +70,9 @@ export async function GET(request: NextRequest) {
       ORDER BY created_at DESC 
       LIMIT ${safeLimit} OFFSET ${safeOffset}
     `;
-
+    
     const queryParams = [userId];
-
+    
     let notifications;
     try {
       notifications = await db.query(notifQuery, queryParams);
@@ -92,11 +81,11 @@ export async function GET(request: NextRequest) {
       try {
         const safeUserId = Math.floor(Number(userId));
         const safeLimitInt = Math.floor(Number(safeLimit));
-
+        
         if (safeUserId <= 0 || safeLimitInt <= 0) {
           throw new Error("Invalid parameters");
         }
-
+        
         const fallbackQuery = `SELECT notification_id, title, message, type, category, is_read, created_at, data FROM notifications WHERE user_id = ${safeUserId} ORDER BY created_at DESC LIMIT ${safeLimitInt}`;
         notifications = await db.queryRaw(fallbackQuery);
       } catch (fallbackError) {
@@ -104,11 +93,9 @@ export async function GET(request: NextRequest) {
         notifications = [];
       }
     }
-
-    const notificationsArray = Array.isArray(notifications)
-      ? notifications
-      : [];
-
+    
+    const notificationsArray = Array.isArray(notifications) ? notifications : [];
+    
     const response: NotificationResponse = {
       notifications: notificationsArray,
       stats: {
@@ -125,6 +112,7 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(response);
+
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(

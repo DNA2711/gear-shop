@@ -70,6 +70,7 @@ export function NotificationProvider({
         setHasMore(data.pagination?.hasMore || false);
         setCurrentPage(page);
       } else if (response.status === 401) {
+        // Token expired, user needs to login again
         console.warn("Unauthorized access to notifications");
       }
     } catch (error) {
@@ -146,6 +147,7 @@ export function NotificationProvider({
         const data: NotificationResponse = await response.json();
         setStats(data.stats);
 
+        // Nếu có thông báo mới, fetch lại toàn bộ notifications
         if (data.stats.unread > stats.unread) {
           fetchNotifications(1);
         }
@@ -155,6 +157,7 @@ export function NotificationProvider({
     }
   };
 
+  // Load notifications khi user thay đổi
   useEffect(() => {
     if (user?.id) {
       fetchNotifications();
@@ -164,16 +167,18 @@ export function NotificationProvider({
     }
   }, [user?.id]);
 
+  // Tự động refresh notifications mỗi 30 giây thay vì 60 giây
   useEffect(() => {
     if (!user?.id) return;
 
     const interval = setInterval(() => {
       refreshUnreadCount();
-    }, 30000);  
+    }, 30000); // Giảm từ 60s xuống 30s
 
     return () => clearInterval(interval);
   }, [user?.id, stats.unread]);
 
+  // Thêm event listener để refresh khi tab được focus
   useEffect(() => {
     const handleFocus = () => {
       if (user?.id) {

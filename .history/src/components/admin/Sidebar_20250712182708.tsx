@@ -103,7 +103,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="text-center text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3"></div>
+          <div className="text-center text-xs text-gray-400 bg-gray-800/50 rounded-lg p-3">
+            <div className="font-semibold text-white mb-1">Admin Panel</div>
+            <div>GearHub v2.0</div>
+          </div>
         </div>
       </div>
     </>

@@ -169,7 +169,7 @@ export function NotificationProvider({
 
     const interval = setInterval(() => {
       refreshUnreadCount();
-    }, 30000);  
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [user?.id, stats.unread]);

@@ -169,7 +169,7 @@ export function NotificationProvider({
 
     const interval = setInterval(() => {
       refreshUnreadCount();
-    }, 30000);  
+    }, 30000); // Giảm từ 60s xuống 30s
 
     return () => clearInterval(interval);
   }, [user?.id, stats.unread]);
